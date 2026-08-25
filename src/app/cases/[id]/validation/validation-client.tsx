@@ -50,7 +50,7 @@ export function ValidationClient({ caseId }: { caseId: string }) {
   }
 
     return (
-    <div className="bg-gridline min-h-[calc(100dvh-3rem)]">
+    <div className="min-h-[calc(100dvh-3rem)]">
       <div className="mx-auto max-w-6xl px-6 py-8">
         <header className="flex flex-wrap items-end justify-between gap-4">
           <div>

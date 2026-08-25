@@ -67,13 +67,90 @@
   --color-struct-eyes: var(--struct-eyes);
   --color-struct-lens: var(--struct-lens);
   --color-struct-normalbrain: var(--struct-normalbrain);
+
+  /* ── DNA scrollbar ───────────────────────────────────────── */
+  --color-dna-a: var(--dna-a);
+  --color-dna-b: var(--dna-b);
+  --color-dna-rung: var(--dna-rung);
+  --color-dna-track: var(--dna-track);
+  --color-dna-thumb-bg: var(--dna-thumb-bg);
+  --color-dna-thumb-border: var(--dna-thumb-border);
 }
 
 /*
- * Meridian design tokens — dark graphite / deep-navy clinical workspace.
+ * Meridian design tokens.
+ * Light theme: warm paper ramp + gold accent adopted from the Data Analyze
+ * Tool palette. Dark theme: deep graphite/navy clinical workspace.
  * Red is reserved exclusively for safety-critical blocked states.
+ * Imaging viewports stay dark in both themes (DICOM viewer convention).
  */
 :root {
+  --background: #f5f4f1;
+  --foreground: #1a1a1c;
+  --card: #ffffff;
+  --card-foreground: #1a1a1c;
+  --popover: #ffffff;
+  --popover-foreground: #1a1a1c;
+  --primary: #0e9384;
+  --primary-foreground: #f2fbf9;
+  --secondary: #edecea;
+  --secondary-foreground: #2a2a2e;
+  --muted: #f0efec;
+  --muted-foreground: #5c5b62;
+  --accent: #eceae6;
+  --accent-foreground: #1a1a1c;
+  --destructive: #d03030;
+  --border: #d4d2ce;
+  --input: #c9c7c1;
+  --ring: #0e9384;
+  --chart-1: #2d6fd6;
+  --chart-2: #0e9384;
+  --chart-3: #c4850e;
+  --chart-4: #7a4fd6;
+  --chart-5: #64748b;
+  --radius: 0.5rem;
+  --sidebar: #efeeea;
+  --sidebar-foreground: #3a3a40;
+  --sidebar-primary: #0e9384;
+  --sidebar-primary-foreground: #f2fbf9;
+  --sidebar-accent: #e7e5e1;
+  --sidebar-accent-foreground: #1a1a1c;
+  --sidebar-border: #dcdad5;
+  --sidebar-ring: #0e9384;
+
+  /* status */
+  --status-ok: #0f8f7f;
+  --status-ok-soft: rgba(15, 143, 127, 0.1);
+  --status-warn: #b3740a;
+  --status-warn-soft: rgba(196, 133, 14, 0.12);
+  --status-danger: #d03030;
+  --status-danger-soft: rgba(208, 48, 48, 0.09);
+  --status-info: #2d6fd6;
+  --status-info-soft: rgba(45, 111, 214, 0.1);
+
+  /* structures — darkened for contrast on paper surfaces */
+  --struct-ptv: #d64533;
+  --struct-ctv: #d97f1f;
+  --struct-gtv: #b01f45;
+  --struct-brainstem: #7a4fd6;
+  --struct-chiasm: #b8960b;
+  --struct-nerves: #6f9c1f;
+  --struct-eyes: #0f9e92;
+  --struct-lens: #3d7fd9;
+  --struct-normalbrain: #64748b;
+
+  /* DNA scrollbar */
+  --dna-a: #0c7c6f;
+  --dna-b: #2d6fd6;
+  --dna-rung: rgba(196, 138, 30, 0.6);
+  --dna-track: rgba(26, 26, 28, 0.12);
+  --dna-thumb-bg: rgba(255, 255, 255, 0.95);
+  --dna-thumb-border: rgba(26, 26, 28, 0.2);
+
+  color-scheme: light;
+}
+
+.dark {
   --background: #0a0e14;
   --foreground: #e7ecf3;
   --card: #10151d;
@@ -97,7 +174,6 @@
   --chart-3: #e2a33e;
   --chart-4: #9d7bea;
   --chart-5: #5a6b85;
-  --radius: 0.5rem;
   --sidebar: #0d1219;
   --sidebar-foreground: #c9d1de;
   --sidebar-primary: #1fc4ae;
@@ -128,6 +204,14 @@
   --struct-lens: #7fb5f5;
   --struct-normalbrain: #5a6b85;
 
+  /* DNA scrollbar */
+  --dna-a: #1fc4ae;
+  --dna-b: #56c2e8;
+  --dna-rung: rgba(226, 163, 62, 0.55);
+  --dna-track: rgba(139, 148, 167, 0.18);
+  --dna-thumb-bg: rgba(10, 14, 20, 0.95);
+  --dna-thumb-border: rgba(139, 148, 167, 0.4);
+
   color-scheme: dark;
 }
 
@@ -143,6 +227,9 @@
     @apply font-sans;
   }
   ::selection {
+    background: rgba(14, 147, 132, 0.24);
+  }
+  .dark ::selection {
     background: rgba(31, 196, 174, 0.28);
   }
 }
@@ -150,7 +237,7 @@
 @layer utilities {
   /* Uppercase micro label used across panels and readouts */
   .text-label {
-    @apply font-medium uppercase tracking-[0.14em];
+    @apply font-medium uppercase;
     font-size: 0.6875rem;
     line-height: 1rem;
     letter-spacing: 0.14em;
@@ -162,23 +249,11 @@
     font-variant-numeric: tabular-nums;
   }
 
-  /* Fine blueprint grid backdrop */
-  .bg-gridline {
-    background-image:
-      linear-gradient(to right, rgba(139, 148, 167, 0.055) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(139, 148, 167, 0.055) 1px, transparent 1px);
-    background-size: 36px 36px;
-  }
-
-  .bg-gridline-dense {
-    background-image:
-      linear-gradient(to right, rgba(139, 148, 167, 0.05) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(139, 148, 167, 0.05) 1px, transparent 1px);
-    background-size: 18px 18px;
-  }
-
   /* Hairline top highlight used on raised panels */
   .panel-edge {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  }
+  .dark .panel-edge {
     box-shadow: inset 0 1px 0 rgba(231, 236, 243, 0.045);
   }
 
@@ -196,6 +271,26 @@
   }
   .scrollbar-thin::-webkit-scrollbar-track {
     background: transparent;
+  }
+
+  /* ── DNA scrollbar: hide the native bar where the helix takes over ── */
+  .dna-scroll {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .dna-scroll::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+  html.dna-page {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  html.dna-page::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
   }
 }
 

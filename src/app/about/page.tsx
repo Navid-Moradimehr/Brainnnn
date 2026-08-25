@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Scope & Safety" };
 
 export default function AboutPage() {
   return (
-    <div className="bg-gridline min-h-[calc(100dvh-3rem)]">
+    <div className="min-h-[calc(100dvh-3rem)]">
       <div className="mx-auto max-w-3xl px-6 py-10">
         <p className="text-label text-muted-foreground">About</p>
         <h1 className="mt-1 text-xl font-semibold tracking-tight">Scope &amp; safety</h1>

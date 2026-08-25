@@ -2,21 +2,53 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
 import {
   LayoutDashboard,
   FolderOpen,
   Plus,
   FlaskConical,
   BookOpenText,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCases } from "@/context/CaseContext";
 import { StageStepper } from "./StageStepper";
+import { DnaScrollbar } from "@/components/scrollbar/DnaScrollbar";
 
 const RAIL = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard, match: (p: string) => p === "/" },
   { href: "#cases", label: "Cases", icon: FolderOpen, match: () => false }, // expanded below
 ];
+
+function ThemeToggle() {
+  const { resolvedTheme, setTheme } = useTheme();
+  const [dark, setDark] = useState<boolean | null>(null);
+  // read the resolved theme after hydration to avoid SSR mismatch
+  useEffect(() => {
+    const id = window.requestAnimationFrame(() => setDark(resolvedTheme === "dark"));
+    return () => window.cancelAnimationFrame(id);
+  }, [resolvedTheme]);
+  return (
+    <button
+      type="button"
+      onClick={() => setTheme(dark ? "light" : "dark")}
+      aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}
+      title={dark ? "Light theme (paper)" : "Dark theme (graphite)"}
+      className="flex h-8 w-8 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+    >
+      {dark === null ? (
+        <Sun className="h-4 w-4 opacity-0" aria-hidden />
+      ) : dark ? (
+        <Sun className="h-4 w-4" aria-hidden />
+      ) : (
+        <Moon className="h-4 w-4" aria-hidden />
+      )}
+    </button>
+  );
+}
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -31,10 +63,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* ── left rail ── */}
       <aside className="fixed inset-y-0 left-0 z-40 flex w-14 flex-col items-center border-r border-sidebar-border bg-sidebar py-4">
         <Link href="/" aria-label="Meridian home" className="mb-6 block">
-          <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden>
-            <circle cx="13" cy="13" r="11.5" fill="none" stroke="#1fc4ae" strokeWidth="1" opacity="0.9" />
-            <circle cx="13" cy="13" r="7.5" fill="none" stroke="#1fc4ae" strokeWidth="1" opacity="0.55" strokeDasharray="3 2.2" />
-            <circle cx="13" cy="13" r="3.2" fill="#1fc4ae" />
+          <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden className="text-[var(--dna-a)]">
+            <circle cx="13" cy="13" r="11.5" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.9" />
+            <circle cx="13" cy="13" r="7.5" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.55" strokeDasharray="3 2.2" />
+            <circle cx="13" cy="13" r="3.2" fill="currentColor" />
           </svg>
         </Link>
 
@@ -108,7 +140,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <span className="rounded-sm border border-warn/35 bg-warn-soft px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em] text-status-warn">
               Research build · Not clinically approved
             </span>
-            <div className="ml-auto num text-xs text-muted-foreground">R. Okafor · Physics</div>
+            <div className="ml-auto flex items-center gap-2">
+              <ThemeToggle />
+              <span className="num text-xs text-muted-foreground">R. Okafor · Physics</span>
+            </div>
           </div>
           {onCaseRoute && activeCase && (
             <div className="border-t border-border/70 px-5 py-2">
@@ -122,6 +157,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </header>
         <main className="flex-1">{children}</main>
       </div>
+
+      {/* DNA page scrollbar (document scroll) */}
+      <DnaScrollbar className="fixed inset-y-0 right-0 z-50" label="Page scrollbar" />
     </div>
   );
 }

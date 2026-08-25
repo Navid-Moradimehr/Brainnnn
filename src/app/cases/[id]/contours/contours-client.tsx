@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   CheckCircle2,
@@ -13,8 +13,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { SliceViewport } from "@/components/viewer/SliceViewport";
+import { DnaScrollbar } from "@/components/scrollbar/DnaScrollbar";
 import { getStructureColor } from "@/components/viewer/structureColors";
 import { SafetyGate } from "@/components/primitives/Panel";
 import { useCases } from "@/context/CaseContext";
@@ -31,7 +31,10 @@ export function ContoursClient({ caseId }: { caseId: string }) {
   const {
     plane, setPlane, sliceIndex, stepSlice, setSliceIndex,
     visibleIds, toggleVisible, select, selectedStructureId, showAll, hideAll,
+    imageMode, setImageMode,
   } = viewer;
+  const listRef = useRef<HTMLDivElement>(null);
+  const inspectRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => setActiveCaseId(caseId), [caseId, setActiveCaseId]);
 
@@ -69,6 +72,23 @@ export function ContoursClient({ caseId }: { caseId: string }) {
             </button>
           ))}
         </div>
+        {/* raw vs contours */}
+        <div role="tablist" aria-label="Image mode" className="flex rounded-sm border border-border bg-secondary p-0.5">
+          {(["raw", "processed"] as const).map((m) => (
+            <button
+              key={m}
+              role="tab"
+              aria-selected={imageMode === m}
+              onClick={() => setImageMode(m)}
+              className={cn(
+                "rounded-[3px] px-3 py-1 text-xs font-medium transition-colors",
+                imageMode === m ? "bg-accent text-foreground" : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {m === "raw" ? "Raw image" : "Contours"}
+            </button>
+          ))}
+        </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => stepSlice(-1)} aria-label="Previous slice">
             −
@@ -99,16 +119,19 @@ export function ContoursClient({ caseId }: { caseId: string }) {
       <div className="grid flex-1 grid-cols-1 lg:grid-cols-[240px_1fr_300px]">
         {/* structure list */}
         <aside aria-label="Structures" className="border-r border-border bg-card/60">
-          <ScrollArea className="h-full">
-            <div className="p-3">
-              <StructureGroup title="Targets" structures={targets} />
-              <StructureGroup title="Organs at risk" structures={oars} className="mt-5" />
+          <div className="relative h-full">
+            <div ref={listRef} className="dna-scroll h-full overflow-y-auto">
+              <div className="p-3 pr-5">
+                <StructureGroup title="Targets" structures={targets} />
+                <StructureGroup title="Organs at risk" structures={oars} className="mt-5" />
+              </div>
             </div>
-          </ScrollArea>
+            <DnaScrollbar target={listRef} className="absolute inset-y-0 right-0.5" label="Structure list" />
+          </div>
         </aside>
 
         {/* viewport */}
-        <section aria-label="Imaging viewport" className="bg-gridline-dense flex flex-col p-5">
+        <section aria-label="Imaging viewport" className="flex flex-col p-5">
           <motion.div
             initial={{ opacity: 0, scale: 0.985 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -124,8 +147,9 @@ export function ContoursClient({ caseId }: { caseId: string }) {
 
         {/* inspection panel */}
         <aside aria-label="Inspection" className="border-l border-border bg-card/60">
-          <ScrollArea className="h-full">
-            <div className="space-y-5 p-4">
+          <div className="relative h-full">
+            <div ref={inspectRef} className="dna-scroll h-full overflow-y-auto">
+            <div className="space-y-5 p-4 pr-5">
               {selectedStructureId ? (() => {
                 const s = kase.structures.find((x) => x.id === selectedStructureId)!;
                 const color = getStructureColor(s.id);
@@ -211,7 +235,9 @@ export function ContoursClient({ caseId }: { caseId: string }) {
                 </Button>
               )}
             </div>
-          </ScrollArea>
+            </div>
+            <DnaScrollbar target={inspectRef} className="absolute inset-y-0 right-0.5" label="Inspection panel" />
+          </div>
         </aside>
       </div>
     </div>

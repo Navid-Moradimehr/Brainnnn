@@ -43,7 +43,7 @@ export function DashboardClient() {
   );
 
   return (
-    <div className="bg-gridline min-h-[calc(100dvh-3rem)]">
+    <div className="min-h-[calc(100dvh-3rem)]">
       <div className="mx-auto max-w-6xl px-6 py-8">
         {/* header */}
         <motion.div variants={fade} initial="hidden" animate="show" custom={0}>

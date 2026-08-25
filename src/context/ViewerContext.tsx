@@ -11,6 +11,8 @@ import {
 
 export type Plane = "axial" | "coronal" | "sagittal";
 export type CompareMode = "candidate" | "reference" | "split";
+/** raw = unmarked image; processed = contours + dose overlays */
+export type ImageMode = "raw" | "processed";
 
 export const PLANE_TOTAL_SLICES: Record<Plane, number> = {
   axial: 96,
@@ -24,6 +26,7 @@ interface ViewerState {
   visibleIds: ReadonlySet<string>;
   selectedStructureId: string | null;
   compareMode: CompareMode;
+  imageMode: ImageMode;
   washOn: boolean;
   washLevel: number; // 0..1 opacity of dose colour wash
   isolinesOn: boolean;
@@ -38,6 +41,7 @@ interface ViewerActions {
   hideAll: () => void;
   select: (id: string | null) => void;
   setCompareMode: (m: CompareMode) => void;
+  setImageMode: (m: ImageMode) => void;
   setWashOn: (v: boolean) => void;
   setWashLevel: (v: number) => void;
   setIsolinesOn: (v: boolean) => void;
@@ -56,6 +60,7 @@ export function ViewerProvider({ children }: { children: ReactNode }) {
   const [visibleIds, setVisibleIds] = useState<ReadonlySet<string>>(new Set(DEFAULT_VISIBLE));
   const [selectedStructureId, setSelectedStructureId] = useState<string | null>(null);
   const [compareMode, setCompareMode] = useState<CompareMode>("candidate");
+  const [imageMode, setImageMode] = useState<ImageMode>("processed");
   const [washOn, setWashOn] = useState(true);
   const [washLevel, setWashLevel] = useState(0.55);
   const [isolinesOn, setIsolinesOn] = useState(true);
@@ -81,6 +86,7 @@ export function ViewerProvider({ children }: { children: ReactNode }) {
     setVisibleIds(new Set(opts?.defaultVisible ?? DEFAULT_VISIBLE));
     setSelectedStructureId(null);
     setCompareMode("candidate");
+    setImageMode("processed");
     setWashOn(true);
     setWashLevel(0.55);
     setIsolinesOn(true);
@@ -93,6 +99,7 @@ export function ViewerProvider({ children }: { children: ReactNode }) {
       visibleIds,
       selectedStructureId,
       compareMode,
+      imageMode,
       washOn,
       washLevel,
       isolinesOn,
@@ -104,12 +111,13 @@ export function ViewerProvider({ children }: { children: ReactNode }) {
       hideAll: () => setVisibleIds(new Set()),
       select: setSelectedStructureId,
       setCompareMode,
+      setImageMode,
       setWashOn,
       setWashLevel,
       setIsolinesOn,
       reset,
     }),
-    [plane, sliceIndex, visibleIds, selectedStructureId, compareMode, washOn, washLevel, isolinesOn, stepSlice, toggleVisible, reset],
+    [plane, sliceIndex, visibleIds, selectedStructureId, compareMode, imageMode, washOn, washLevel, isolinesOn, stepSlice, toggleVisible, reset],
   );
 
   return <ViewerContext.Provider value={value}>{children}</ViewerContext.Provider>;

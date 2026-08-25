@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import {
   CheckCircle2,
@@ -17,7 +17,7 @@ import { Slider } from "@/components/ui/slider";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { DnaScrollbar } from "@/components/scrollbar/DnaScrollbar";
 import { SliceViewport } from "@/components/viewer/SliceViewport";
 import { DvhChart } from "@/components/viewer/DvhChart";
 import { ConstraintTable, mapNameToId } from "@/components/viewer/ConstraintTable";
@@ -79,13 +79,16 @@ export function ReviewClient({ caseId }: { caseId: string }) {
   const {
     plane, setPlane, sliceIndex, stepSlice,
     visibleIds, toggleVisible, select, selectedStructureId,
-    compareMode, setCompareMode, washOn, setWashOn, washLevel, setWashLevel,
+    compareMode, setCompareMode, imageMode, setImageMode,
+    washOn, setWashOn, washLevel, setWashLevel,
     isolinesOn, setIsolinesOn,
   } = viewer;
   const [notes, setNotes] = useState(
     "Left optic nerve at 52.4 Gy accepted to secure D95 coverage; physics concurrence recorded in audit.",
   );
   const [highlightDefId, setHighlightDefId] = useState<string | null>(null);
+  const structRef = useRef<HTMLDivElement>(null);
+  const evalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => setActiveCaseId(caseId), [caseId, setActiveCaseId]);
 
@@ -176,8 +179,26 @@ export function ReviewClient({ caseId }: { caseId: string }) {
           ))}
         </div>
 
+        {/* raw vs processed image */}
+        <div role="tablist" aria-label="Image mode" className="flex rounded-sm border border-border bg-secondary p-0.5">
+          {(["raw", "processed"] as const).map((m) => (
+            <button
+              key={m}
+              role="tab"
+              aria-selected={imageMode === m}
+              onClick={() => setImageMode(m)}
+              className={cn(
+                "rounded-[3px] px-2.5 py-1 text-xs font-medium capitalize transition-colors",
+                imageMode === m ? "bg-accent text-foreground" : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {m === "raw" ? "Raw image" : "Processed"}
+            </button>
+          ))}
+        </div>
+
         <Select value={compareMode} onValueChange={(v) => setCompareMode(v as typeof compareMode)}>
-          <SelectTrigger size="sm" className="w-[170px]" aria-label="Dose comparison mode">
+          <SelectTrigger size="sm" className="w-[170px]" aria-label="Dose comparison mode" disabled={imageMode === "raw"}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -187,8 +208,13 @@ export function ReviewClient({ caseId }: { caseId: string }) {
           </SelectContent>
         </Select>
 
-        <label className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Switch checked={washOn} onCheckedChange={setWashOn} aria-label="Toggle dose wash" />
+        <label className={cn("flex items-center gap-2 text-xs", imageMode === "raw" ? "opacity-40" : "text-muted-foreground")}>
+          <Switch
+            checked={washOn && imageMode === "processed"}
+            disabled={imageMode === "raw"}
+            onCheckedChange={setWashOn}
+            aria-label="Toggle dose wash"
+          />
           Wash
         </label>
         <Slider
@@ -196,12 +222,18 @@ export function ReviewClient({ caseId }: { caseId: string }) {
           min={0}
           max={1}
           step={0.05}
+          disabled={imageMode === "raw"}
           onValueChange={([v]) => setWashLevel(v)}
           className="w-28"
           aria-label="Dose wash opacity"
         />
-        <label className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Switch checked={isolinesOn} onCheckedChange={setIsolinesOn} aria-label="Toggle isodose lines" />
+        <label className={cn("flex items-center gap-2 text-xs", imageMode === "raw" ? "opacity-40" : "text-muted-foreground")}>
+          <Switch
+            checked={isolinesOn && imageMode === "processed"}
+            disabled={imageMode === "raw"}
+            onCheckedChange={setIsolinesOn}
+            aria-label="Toggle isodose lines"
+          />
           Isodose lines
         </label>
 
@@ -218,8 +250,9 @@ export function ReviewClient({ caseId }: { caseId: string }) {
       <div className="grid flex-1 grid-cols-1 xl:grid-cols-[220px_1fr_380px]">
         {/* structures */}
         <aside aria-label="Structure visibility" className="border-r border-border bg-card/60">
-          <ScrollArea className="h-full max-h-[calc(100dvh-9rem)]">
-            <div className="space-y-5 p-3">
+          <div className="relative h-full max-h-[calc(100dvh-9rem)]">
+            <div ref={structRef} className="dna-scroll h-full overflow-y-auto">
+            <div className="space-y-5 p-3 pr-5">
               <StructureGroup title="Targets" list={targets} />
               <StructureGroup title="Organs at risk" list={oars} className="mt-5" />
 
@@ -236,11 +269,13 @@ export function ReviewClient({ caseId }: { caseId: string }) {
                 </ul>
               </div>
             </div>
-          </ScrollArea>
+            </div>
+            <DnaScrollbar target={structRef} className="absolute inset-y-0 right-0.5" label="Structure list" />
+          </div>
         </aside>
 
         {/* viewer */}
-        <section aria-label="Dose overlay viewer" className="bg-gridline-dense flex flex-col p-4">
+        <section aria-label="Dose overlay viewer" className="flex flex-col p-4">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -296,8 +331,9 @@ export function ReviewClient({ caseId }: { caseId: string }) {
 
         {/* right column */}
         <aside aria-label="Evaluation" className="border-l border-border bg-card/60">
-          <ScrollArea className="h-full max-h-[calc(100dvh-9rem)]">
-            <div className="space-y-5 p-4">
+          <div className="relative h-full max-h-[calc(100dvh-9rem)]">
+            <div ref={evalRef} className="dna-scroll h-full overflow-y-auto">
+            <div className="space-y-5 p-4 pr-5">
               {/* DVH */}
               <section aria-label="DVH">
                 <div className="mb-2 flex items-center justify-between">
@@ -415,7 +451,9 @@ export function ReviewClient({ caseId }: { caseId: string }) {
                 )}
               </section>
             </div>
-          </ScrollArea>
+            </div>
+            <DnaScrollbar target={evalRef} className="absolute inset-y-0 right-0.5" label="Evaluation panel" />
+          </div>
         </aside>
       </div>
     </div>

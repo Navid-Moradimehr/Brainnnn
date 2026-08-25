@@ -34,6 +34,7 @@ export function SliceViewport({
     sliceIndex,
     visibleIds,
     selectedStructureId,
+    imageMode,
     washOn,
     washLevel,
     isolinesOn,
@@ -48,6 +49,7 @@ export function SliceViewport({
 
   const total = PLANE_TOTAL_SLICES[plane];
   const ct = modality === "ct";
+  const raw = imageMode === "raw";
 
   return (
     <div
@@ -103,8 +105,8 @@ export function SliceViewport({
           </>
         )}
 
-        {/* ── dose wash ── */}
-        {doseVariant && geo.isolines.length > 0 && washOn && (
+        {/* ── dose wash (processed mode only) ── */}
+        {!raw && doseVariant && geo.isolines.length > 0 && washOn && (
           <g opacity={washLevel * (doseVariant === "reference" ? 0.75 : 1)}>
             {[...geo.isolines].reverse().map(({ levelGy, path }) => (
               <path key={levelGy} d={path} fill={ISO_STYLE[levelGy]?.stroke ?? "#fff"} opacity={levelGy >= 54 ? 0.34 : levelGy >= 45 ? 0.22 : 0.12} />
@@ -112,8 +114,8 @@ export function SliceViewport({
           </g>
         )}
 
-        {/* ── isodose lines ── */}
-        {doseVariant && geo.isolines.length > 0 && isolinesOn && (
+        {/* ── isodose lines (processed mode only) ── */}
+        {!raw && doseVariant && geo.isolines.length > 0 && isolinesOn && (
           <g>
             {geo.isolines.map(({ levelGy, path }) => (
               <path
@@ -129,8 +131,8 @@ export function SliceViewport({
           </g>
         )}
 
-        {/* ── contours ── */}
-        {showContours &&
+        {/* ── contours (processed mode only) ── */}
+        {!raw && showContours &&
           geo.contours.map(({ structureId, path }) => {
             const visible = visibleIds.has(structureId);
             if (!visible) return null;
@@ -173,10 +175,10 @@ export function SliceViewport({
         />
       )}
 
-      {/* HUD overlays */}
-      <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-2.5 font-mono text-[10px] tracking-wider text-foreground/70">
+      {/* HUD overlays — fixed light values: the imaging canvas is dark in both themes */}
+      <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-2.5 font-mono text-[10px] tracking-wider text-[#c9d1de]/75">
         <div className="flex items-start justify-between">
-          <span>{modality.toUpperCase()} · {plane.slice(0, 3).toUpperCase()}</span>
+          <span>{modality.toUpperCase()} · {plane.slice(0, 3).toUpperCase()}{raw && " · RAW"}</span>
           <span>FOV 260mm</span>
         </div>
         <div className="flex items-end justify-between">
@@ -184,7 +186,7 @@ export function SliceViewport({
             S {String(sliceIndex + 1).padStart(3, "0")}/{total}
           </span>
           <span className="flex gap-1.5">
-            {plane === "axial" ? <><i>I</i><b className="not-italic text-foreground">S</b></> : <><b className="not-italic text-foreground">A</b><i>P</i></>}
+            {plane === "axial" ? <><i>I</i><b className="not-italic text-white">S</b></> : <><b className="not-italic text-white">A</b><i>P</i></>}
           </span>
         </div>
       </div>
