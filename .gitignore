@@ -45,3 +45,6 @@ next-env.d.ts
 
 # Playwright CLI session artifacts
 .playwright-cli/
+
+# Static export output (GitHub Pages build artifact)
+out/

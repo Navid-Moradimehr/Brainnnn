@@ -1,4 +1,10 @@
 import type { Metadata } from "next";
+import { CASES } from "@/lib/mock/cases";
+
+export function generateStaticParams() {
+  return CASES.map((c) => ({ id: c.id }));
+}
+
 import { ExportClient } from "./export-client";
 
 export const metadata: Metadata = { title: "Export & Audit" };
