@@ -7,9 +7,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-sans: var(--font-plex-sans);
+  --font-mono: var(--font-plex-mono);
+  --font-heading: var(--font-plex-sans);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -46,75 +46,89 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* ── Meridian semantic status colors ─────────────────────── */
+  --color-ok: var(--status-ok);
+  --color-ok-soft: var(--status-ok-soft);
+  --color-warn: var(--status-warn);
+  --color-warn-soft: var(--status-warn-soft);
+  --color-danger: var(--status-danger);
+  --color-danger-soft: var(--status-danger-soft);
+  --color-info: var(--status-info);
+  --color-info-soft: var(--status-info-soft);
+
+  /* ── Structure palette (viewer / DVH / table share these) ── */
+  --color-struct-ptv: var(--struct-ptv);
+  --color-struct-ctv: var(--struct-ctv);
+  --color-struct-gtv: var(--struct-gtv);
+  --color-struct-brainstem: var(--struct-brainstem);
+  --color-struct-chiasm: var(--struct-chiasm);
+  --color-struct-nerves: var(--struct-nerves);
+  --color-struct-eyes: var(--struct-eyes);
+  --color-struct-lens: var(--struct-lens);
+  --color-struct-normalbrain: var(--struct-normalbrain);
 }
 
+/*
+ * Meridian design tokens — dark graphite / deep-navy clinical workspace.
+ * Red is reserved exclusively for safety-critical blocked states.
+ */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
+  --background: #0a0e14;
+  --foreground: #e7ecf3;
+  --card: #10151d;
+  --card-foreground: #e7ecf3;
+  --popover: #141a24;
+  --popover-foreground: #e7ecf3;
+  --primary: #1fc4ae;
+  --primary-foreground: #04211c;
+  --secondary: #171e29;
+  --secondary-foreground: #dfe5ee;
+  --muted: #151b25;
+  --muted-foreground: #8b94a7;
+  --accent: #16202b;
+  --accent-foreground: #e7ecf3;
+  --destructive: #e5484d;
+  --border: #212a38;
+  --input: #27303f;
+  --ring: #1fc4ae;
+  --chart-1: #56c2e8;
+  --chart-2: #1fc4ae;
+  --chart-3: #e2a33e;
+  --chart-4: #9d7bea;
+  --chart-5: #5a6b85;
+  --radius: 0.5rem;
+  --sidebar: #0d1219;
+  --sidebar-foreground: #c9d1de;
+  --sidebar-primary: #1fc4ae;
+  --sidebar-primary-foreground: #04211c;
+  --sidebar-accent: #16202b;
+  --sidebar-accent-foreground: #e7ecf3;
+  --sidebar-border: #1c2431;
+  --sidebar-ring: #1fc4ae;
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* status */
+  --status-ok: #1fc4ae;
+  --status-ok-soft: rgba(31, 196, 174, 0.12);
+  --status-warn: #e2a33e;
+  --status-warn-soft: rgba(226, 163, 62, 0.12);
+  --status-danger: #e5484d;
+  --status-danger-soft: rgba(229, 72, 77, 0.13);
+  --status-info: #56c2e8;
+  --status-info-soft: rgba(86, 194, 232, 0.12);
+
+  /* structures */
+  --struct-ptv: #ff6b5e;
+  --struct-ctv: #ffa94d;
+  --struct-gtv: #c92a52;
+  --struct-brainstem: #9d7bea;
+  --struct-chiasm: #ecc94b;
+  --struct-nerves: #a3cf5f;
+  --struct-eyes: #45cdbf;
+  --struct-lens: #7fb5f5;
+  --struct-normalbrain: #5a6b85;
+
+  color-scheme: dark;
 }
 
 @layer base {
@@ -123,8 +137,74 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "ss01";
   }
   html {
     @apply font-sans;
+  }
+  ::selection {
+    background: rgba(31, 196, 174, 0.28);
+  }
+}
+
+@layer utilities {
+  /* Uppercase micro label used across panels and readouts */
+  .text-label {
+    @apply font-medium uppercase tracking-[0.14em];
+    font-size: 0.6875rem;
+    line-height: 1rem;
+    letter-spacing: 0.14em;
+  }
+
+  /* Numeric readouts */
+  .num {
+    font-family: var(--font-plex-mono), monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Fine blueprint grid backdrop */
+  .bg-gridline {
+    background-image:
+      linear-gradient(to right, rgba(139, 148, 167, 0.055) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(139, 148, 167, 0.055) 1px, transparent 1px);
+    background-size: 36px 36px;
+  }
+
+  .bg-gridline-dense {
+    background-image:
+      linear-gradient(to right, rgba(139, 148, 167, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(139, 148, 167, 0.05) 1px, transparent 1px);
+    background-size: 18px 18px;
+  }
+
+  /* Hairline top highlight used on raised panels */
+  .panel-edge {
+    box-shadow: inset 0 1px 0 rgba(231, 236, 243, 0.045);
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #2a3444 transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #2a3444;
+    border-radius: 4px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
