@@ -32,6 +32,7 @@ export interface CaseActions {
     },
   ) => void;
   markExported: (caseId: string, what: string) => void;
+  createCase: (init: { diagnosis: string; missingOar?: boolean }) => string;
 }
 
 interface CaseContextValue extends CaseActions {
@@ -143,8 +144,50 @@ export function CaseProvider({ children }: { children: ReactNode }) {
             { timestamp: now(), actor: "M. Lindqvist (physics)", action: `Export prepared — ${what}`, severity: "info" },
           ),
         ),
+      createCase: ({ diagnosis, missingOar }) => {
+        const num = 242 + (cases.length > 3 ? cases.length - 3 : 0);
+        const id = `GBM-${String(num).padStart(4, "0")}`;
+        const ts = now();
+        const base = getMockCase("GBM-0241")!;
+        const newCase: Case = {
+          ...base,
+          id,
+          createdAt: ts,
+          updatedAt: ts,
+          status: "data-review",
+          diagnosis,
+          imaging: base.imaging.map((s, i) => ({
+            ...s,
+            id: `${i === 0 ? "ct" : "mr"}-${num}`,
+            receivedAt: ts,
+            registrationConfidence: i === 1 ? undefined : s.registrationConfidence,
+            status: "received",
+          })),
+          structures: base.structures.map((s) => ({
+            ...s,
+            approvedBy: undefined,
+            approvedAt: undefined,
+            completenessPct: missingOar && s.id === "chiasm" ? 60 : 100,
+            note: missingOar && s.id === "chiasm" ? "Contour incomplete — flagged at import." : undefined,
+          })),
+          contoursApproved: false,
+          intentConfirmed: false,
+          candidatePlan: undefined,
+          reviewDecision: undefined,
+          registrationDecision: "pending",
+          registrationWarnings: missingOar
+            ? ["Required OAR contour incomplete: optic chiasm — add or import updated RTSTRUCT."]
+            : [],
+          auditTrail: [
+            { id: `ae-${Date.now()}`, timestamp: ts, actor: "R. Okafor", action: `Case created via import wizard (${id})`, severity: "info" as const },
+          ],
+        };
+        setCases((prev) => [newCase, ...prev]);
+        setActiveCaseId(id);
+        return id;
+      },
     }),
-    [update],
+    [update, cases.length],
   );
 
   const value = useMemo<CaseContextValue>(
