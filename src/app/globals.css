@@ -139,13 +139,21 @@
   --struct-lens: #3d7fd9;
   --struct-normalbrain: #64748b;
 
-  /* DNA scrollbar */
-  --dna-a: #0c7c6f;
+  /* DNA scrollbar — 3D helix palette */
+  --dna-bar-w: 20px;
+  --dna-a: #0c8a7b;
   --dna-b: #2d6fd6;
-  --dna-rung: rgba(196, 138, 30, 0.6);
+  --dna-hi-a: #7fe8d8;
+  --dna-hi-b: #9ec8ff;
+  --dna-rung-a: #b3740a;
+  --dna-rung-b: #2d6fd6;
   --dna-track: rgba(26, 26, 28, 0.12);
   --dna-thumb-bg: rgba(255, 255, 255, 0.95);
   --dna-thumb-border: rgba(26, 26, 28, 0.2);
+  --dna-cap-hi: rgba(255, 255, 255, 0.92);
+  --dna-cap-mid: rgba(246, 245, 242, 0.85);
+  --dna-cap-lo: rgba(226, 224, 219, 0.9);
+  --dna-shadow: rgba(26, 26, 28, 0.28);
 
   color-scheme: light;
 }
@@ -204,13 +212,20 @@
   --struct-lens: #7fb5f5;
   --struct-normalbrain: #5a6b85;
 
-  /* DNA scrollbar */
-  --dna-a: #1fc4ae;
+  /* DNA scrollbar — 3D helix palette */
+  --dna-a: #23d3ba;
   --dna-b: #56c2e8;
-  --dna-rung: rgba(226, 163, 62, 0.55);
+  --dna-hi-a: #b8fff2;
+  --dna-hi-b: #d4f1ff;
+  --dna-rung-a: #e2a33e;
+  --dna-rung-b: #56c2e8;
   --dna-track: rgba(139, 148, 167, 0.18);
   --dna-thumb-bg: rgba(10, 14, 20, 0.95);
   --dna-thumb-border: rgba(139, 148, 167, 0.4);
+  --dna-cap-hi: rgba(46, 58, 74, 0.55);
+  --dna-cap-mid: rgba(16, 22, 30, 0.72);
+  --dna-cap-lo: rgba(8, 11, 16, 0.8);
+  --dna-shadow: rgba(0, 0, 0, 0.5);
 
   color-scheme: dark;
 }
@@ -279,15 +294,6 @@
     -ms-overflow-style: none;
   }
   .dna-scroll::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-    display: none;
-  }
-  html.dna-page {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-  html.dna-page::-webkit-scrollbar {
     width: 0;
     height: 0;
     display: none;

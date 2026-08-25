@@ -62,7 +62,7 @@ export function CaseProvider({ children }: { children: ReactNode }) {
 
   const actions = useMemo<CaseActions>(
     () => ({
-      approveRegistration: (caseId, actor = "R. Okafor") =>
+      approveRegistration: (caseId, actor = "N. Moradimehr") =>
         update(caseId, (c) =>
           withEvent(
             { ...c, registrationDecision: "approved", status: c.status === "data-review" ? "ready" : c.status },
@@ -73,7 +73,7 @@ export function CaseProvider({ children }: { children: ReactNode }) {
         update(caseId, (c) =>
           withEvent(
             { ...c, registrationDecision: "returned", status: "draft" },
-            { timestamp: now(), actor: "R. Okafor", action: "Returned to import for re-registration", severity: "warning" },
+            { timestamp: now(), actor: "N. Moradimehr", action: "Returned to import for re-registration", severity: "warning" },
           ),
         ),
       approveContours: (caseId, actor = "Dr. E. Varga") => {
@@ -179,7 +179,7 @@ export function CaseProvider({ children }: { children: ReactNode }) {
             ? ["Required OAR contour incomplete: optic chiasm — add or import updated RTSTRUCT."]
             : [],
           auditTrail: [
-            { id: `ae-${Date.now()}`, timestamp: ts, actor: "R. Okafor", action: `Case created via import wizard (${id})`, severity: "info" as const },
+            { id: `ae-${Date.now()}`, timestamp: ts, actor: "N. Moradimehr", action: `Case created via import wizard (${id})`, severity: "info" as const },
           ],
         };
         setCases((prev) => [newCase, ...prev]);

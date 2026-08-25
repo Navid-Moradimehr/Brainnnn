@@ -9,6 +9,7 @@ import {
   FileText,
   FlaskConical,
   Info,
+  Move,
   Undo2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -89,6 +90,7 @@ export function ReviewClient({ caseId }: { caseId: string }) {
   const [highlightDefId, setHighlightDefId] = useState<string | null>(null);
   const structRef = useRef<HTMLDivElement>(null);
   const evalRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => setActiveCaseId(caseId), [caseId, setActiveCaseId]);
 
@@ -146,7 +148,7 @@ export function ReviewClient({ caseId }: { caseId: string }) {
   const doseVariant = compareMode === "reference" ? "reference" : "candidate";
 
   return (
-    <div className="flex min-h-[calc(100dvh-3rem)] flex-col">
+    <div className="flex h-full min-h-0 flex-col">
       {/* research disclaimer strip */}
       <div className="flex items-center justify-center gap-2 border-b border-warn/25 bg-warn-soft px-4 py-1.5" role="note">
         <Info className="h-3.5 w-3.5 shrink-0 text-status-warn" aria-hidden />
@@ -247,11 +249,11 @@ export function ReviewClient({ caseId }: { caseId: string }) {
       </div>
 
       {/* workspace */}
-      <div className="grid flex-1 grid-cols-1 xl:grid-cols-[220px_1fr_380px]">
+      <div className="grid min-h-0 flex-1 grid-cols-1 xl:grid-cols-[220px_1fr_380px]">
         {/* structures */}
         <aside aria-label="Structure visibility" className="border-r border-border bg-card/60">
-          <div className="relative h-full max-h-[calc(100dvh-9rem)]">
-            <div ref={structRef} className="dna-scroll h-full overflow-y-auto">
+          <div className="relative h-full h-full">
+            <div ref={structRef} id="review-structures" className="dna-scroll h-full overflow-y-auto">
             <div className="space-y-5 p-3 pr-5">
               <StructureGroup title="Targets" list={targets} />
               <StructureGroup title="Organs at risk" list={oars} className="mt-5" />
@@ -270,13 +272,14 @@ export function ReviewClient({ caseId }: { caseId: string }) {
               </div>
             </div>
             </div>
-            <DnaScrollbar target={structRef} className="absolute inset-y-0 right-0.5" label="Structure list" />
+            <DnaScrollbar target={structRef} controls="review-structures" className="absolute inset-y-0 right-0.5" label="Structure list" />
           </div>
         </aside>
 
         {/* viewer */}
         <section aria-label="Dose overlay viewer" className="flex flex-col p-4">
           <motion.div
+            ref={viewportRef}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.35 }}
@@ -284,10 +287,20 @@ export function ReviewClient({ caseId }: { caseId: string }) {
           >
             <SliceViewport modality="mr" doseVariant={doseVariant} className="h-full w-full" />
             {compareMode === "split" && (
-              <div className="absolute right-3 top-1/2 w-[46%] -translate-y-1/2 overflow-hidden rounded-md border border-info/40 shadow-lg">
-                <SliceViewport modality="ct" doseVariant="reference" showContours={false} className="aspect-square w-full" />
-                <span className="absolute left-2 top-2 rounded-sm bg-black/60 px-1.5 py-0.5 font-mono text-[10px] text-foreground/85">REFERENCE · CT</span>
-              </div>
+              <motion.div
+                drag
+                dragMomentum={false}
+                dragElastic={0.04}
+                dragConstraints={viewportRef}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="absolute bottom-3 right-3 w-[46%] cursor-grab touch-none overflow-hidden rounded-md border border-info/40 shadow-xl active:cursor-grabbing"
+                title="Drag to reposition the reference panel"
+              >
+                <SliceViewport modality="ct" doseVariant="reference" showContours={false} className="aspect-square w-full pointer-events-none" />
+                <span className="pointer-events-none absolute left-2 top-2 rounded-sm bg-black/60 px-1.5 py-0.5 font-mono text-[10px] text-white/85">REFERENCE · CT</span>
+                <Move className="pointer-events-none absolute right-2 top-2 h-3.5 w-3.5 text-white/70" aria-hidden />
+              </motion.div>
             )}
           </motion.div>
 
@@ -331,8 +344,8 @@ export function ReviewClient({ caseId }: { caseId: string }) {
 
         {/* right column */}
         <aside aria-label="Evaluation" className="border-l border-border bg-card/60">
-          <div className="relative h-full max-h-[calc(100dvh-9rem)]">
-            <div ref={evalRef} className="dna-scroll h-full overflow-y-auto">
+          <div className="relative h-full h-full">
+            <div ref={evalRef} id="review-eval" className="dna-scroll h-full overflow-y-auto">
             <div className="space-y-5 p-4 pr-5">
               {/* DVH */}
               <section aria-label="DVH">
@@ -452,7 +465,7 @@ export function ReviewClient({ caseId }: { caseId: string }) {
               </section>
             </div>
             </div>
-            <DnaScrollbar target={evalRef} className="absolute inset-y-0 right-0.5" label="Evaluation panel" />
+            <DnaScrollbar target={evalRef} controls="review-eval" className="absolute inset-y-0 right-0.5" label="Evaluation panel" />
           </div>
         </aside>
       </div>

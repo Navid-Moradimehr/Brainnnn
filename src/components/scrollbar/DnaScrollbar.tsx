@@ -8,19 +8,19 @@ import {
   type PointerEvent as ReactPointerEvent,
   type KeyboardEvent as ReactKeyboardEvent,
 } from "react";
-import { useReducedMotion } from "framer-motion";
 
 /**
- * DnaScrollbar — an overlay scrollbar whose thumb is a DNA double helix.
+ * DnaScrollbar — an overlay scrollbar whose thumb is a 3D DNA double helix.
  *
- * - Thumb height scales with visible/total ratio (min 56px)
- * - The helix phase advances with scrollTop, so the strands rotate/travel
- *   as the user moves through the page
+ * - The helix is RIGID inside the thumb: the whole DNA travels up/down the
+ *   track with navigation (no internal phase travel, so it never "separates")
+ * - 3D look: over/under strand weave, cylindrical tube shading with specular
+ *   highlights, drop shadow on a glassy capsule, two-tone base-pair rungs
+ * - Thumb height scales with visible/total ratio (min 64px)
  * - Drag thumb, click track to page, wheel over the bar, full keyboard support
  *
- * Why custom: CSS ::-webkit-scrollbar styling cannot animate thumb content
- * with scroll position, and overlay-scrollbar libraries don't expose custom
- * thumb rendering. A small SVG component (no dependency) gives exact control.
+ * Why custom: CSS ::-webkit-scrollbar styling cannot render thumb content,
+ * and overlay-scrollbar libraries don't expose custom thumb rendering.
  */
 
 interface Metrics {
@@ -34,24 +34,26 @@ interface Props {
   target?: React.RefObject<HTMLElement | null>;
   /** Positioning classes, e.g. "absolute inset-y-0 right-0" or "fixed right-0 inset-y-0 z-50". */
   className?: string;
-  /** Track width in px (thumb is thickness-4 wide). */
+  /** Track width in px. */
   thickness?: number;
-  /** Accessible label / aria-controls target id. */
+  /** Accessible label. */
   label?: string;
+  /** id of the scrollable region this bar controls. */
+  controls?: string;
 }
 
-const MIN_THUMB = 56;
+const MIN_THUMB = 64;
 const WAVELENGTH = 26;
-const AMP = 3;
-const PHASE_PER_PX = 0.045;
+const AMP = 4;
+/** radians of twist per scrolled pixel — the helix rotates as you navigate */
+const TWIST_PER_PX = 0.05;
 
-export function DnaScrollbar({ target, className, thickness = 16, label = "Content scrollbar" }: Props) {
+export function DnaScrollbar({ target, className, thickness = 20, label = "DNA scrollbar", controls }: Props) {
   const [metrics, setMetrics] = useState<Metrics>({ scrollTop: 0, scrollHeight: 0, clientHeight: 0 });
   const [boxH, setBoxH] = useState(0);
   const drag = useRef<{ startY: number; startScroll: number } | null>(null);
   const raf = useRef(0);
   const hostCleanup = useRef<(() => void) | null>(null);
-  const reduce = useReducedMotion();
 
   const getEl = useCallback((): HTMLElement | null => {
     if (target) return target.current;
@@ -73,7 +75,6 @@ export function DnaScrollbar({ target, className, thickness = 16, label = "Conte
     raf.current = requestAnimationFrame(() => setMetrics(read()));
   }, [read]);
 
-  // scroll + resize observation
   useEffect(() => {
     const el = getEl();
     schedule();
@@ -84,7 +85,11 @@ export function DnaScrollbar({ target, className, thickness = 16, label = "Conte
     el?.addEventListener("scroll", onScroll, { passive: true });
     const ro = new ResizeObserver(() => schedule());
     if (el && !target) ro.observe(document.body);
-    else if (el) ro.observe(el);
+    else if (el) {
+      ro.observe(el);
+      // content growth changes scrollHeight without resizing the container
+      if (el.firstElementChild) ro.observe(el.firstElementChild);
+    }
     window.addEventListener("resize", schedule);
     return () => {
       window.removeEventListener("scroll", onScroll);
@@ -97,8 +102,7 @@ export function DnaScrollbar({ target, className, thickness = 16, label = "Conte
     };
   }, [getEl, schedule, target]);
 
-  // host measurement via callback ref — attaches the observer as soon as the
-  // node exists, avoiding the null-render deadlock
+  // host measurement via callback ref — avoids the null-render deadlock
   const hostNode = useRef<HTMLDivElement | null>(null);
   const hostRef = useCallback((node: HTMLDivElement | null) => {
     hostNode.current = node;
@@ -110,16 +114,7 @@ export function DnaScrollbar({ target, className, thickness = 16, label = "Conte
     hostCleanup.current = () => hro.disconnect();
   }, []);
 
-  // hide the native page scrollbar while the helix bar is mounted
-  useEffect(() => {
-    if (target) return;
-    document.documentElement.classList.add("dna-page");
-    return () => document.documentElement.classList.remove("dna-page");
-  }, [target]);
-
   const scrollable = metrics.scrollHeight > metrics.clientHeight + 4;
-  // boxH is measured after the host mounts; fall back so the host can mount
-  // and be measured (its height comes from CSS positioning, not content)
   const trackH = Math.max(0, (boxH || metrics.clientHeight || 320) - 8);
   const ratio = metrics.scrollHeight > 0 ? metrics.clientHeight / metrics.scrollHeight : 1;
   const thumbH = Math.max(MIN_THUMB, Math.min(trackH, ratio * trackH));
@@ -177,22 +172,54 @@ export function DnaScrollbar({ target, className, thickness = 16, label = "Conte
 
   if (!scrollable) return null;
 
-  const phase = reduce ? 0 : metrics.scrollTop * PHASE_PER_PX;
-  const cx = thickness / 2 + 1;
-  const ptsA: string[] = [];
-  const ptsB: string[] = [];
-  const rungs: Array<{ y: number; xa: number; xb: number }> = [];
-  const step = 3;
-  for (let y = 0; y <= thumbH; y += step) {
-    const s = Math.sin((2 * Math.PI * y) / WAVELENGTH + phase);
-    ptsA.push(`${(cx + AMP * s).toFixed(2)},${y.toFixed(2)}`);
-    ptsB.push(`${(cx - AMP * s).toFixed(2)},${y.toFixed(2)}`);
-    if (y % Math.round(WAVELENGTH / 4) === 0 && y > 2 && y < thumbH - 2) {
-      rungs.push({ y, xa: cx + AMP * s, xb: cx - AMP * s });
+  /* ── 3D helix geometry ──
+     The DNA travels with the thumb AND twists as you scroll: the phase
+     advances with scrollTop, rotating the helix around its axis. */
+  const twist = metrics.scrollTop * TWIST_PER_PX;
+  const cx = thickness / 2;
+  const capW = thickness - 4;
+  const capH = thumbH;
+  const strandOffset = (y: number) => -AMP * Math.cos((2 * Math.PI * y) / WAVELENGTH - twist);
+
+  // sample strands; split into front/back segments at crossings for the weave
+  const segA: Array<{ front: boolean; d: string }> = [];
+  const segB: Array<{ front: boolean; d: string }> = [];
+  const rungs: Array<{ y: number; xa: number; xb: number; len: number }> = [];
+  {
+    let curA = "";
+    let curB = "";
+    let frontA = true;
+    for (let y = 0; y <= capH + 0.01; y += 2) {
+      const off = strandOffset(y);
+      const depth = Math.sin((2 * Math.PI * y) / WAVELENGTH - twist);
+      const fa = depth >= 0;
+      const pA = `${(cx + off).toFixed(2)},${y.toFixed(2)}`;
+      const pB = `${(cx - off).toFixed(2)},${y.toFixed(2)}`;
+      if (fa !== frontA) {
+        if (curA) segA.push({ front: frontA, d: curA });
+        if (curB) segB.push({ front: !frontA, d: curB });
+        curA = `M ${pA}`;
+        curB = `M ${pB}`;
+        frontA = fa;
+      } else {
+        curA += curA ? ` L ${pA}` : `M ${pA}`;
+        curB += curB ? ` L ${pB}` : `M ${pB}`;
+      }
+      // base-pair ladder: a rung at EVERY step — rungs shorten to nothing at
+      // crossings instead of popping in/out, so the twist reads continuously
+      if (y >= 3 && y <= capH - 3 && y % 4 === 0) {
+        rungs.push({ y, xa: cx + off, xb: cx - off, len: Math.abs(off) / AMP });
+      }
     }
+    if (curA) segA.push({ front: frontA, d: curA });
+    if (curB) segB.push({ front: !frontA, d: curB });
   }
-  const pathA = `M ${ptsA.join(" L ")}`;
-  const pathB = `M ${ptsB.join(" L ")}`;
+
+    const strandStroke = (front: boolean) => ({
+    shadow: "var(--dna-shadow)",
+    base: front ? "var(--dna-a)" : "var(--dna-b)",
+    hi: front ? "var(--dna-hi-a)" : "var(--dna-hi-b)",
+  });
 
   return (
     <div
@@ -202,78 +229,110 @@ export function DnaScrollbar({ target, className, thickness = 16, label = "Conte
       style={{ width: thickness }}
       onPointerDown={onTrackPointerDown}
       onWheel={onWheel}
-      aria-hidden={false}
     >
-      <svg width={thickness} height={boxH} className="block">
-        {/* track */}
-        <line
-          x1={cx}
-          y1={4}
-          x2={cx}
-          y2={trackH + 4}
-          stroke="var(--dna-track)"
-          strokeWidth={1}
-        />
-        {/* ruler ticks */}
-        {Array.from({ length: Math.floor(trackH / 24) }, (_, i) => (
-          <line
-            key={i}
-            x1={cx - 2}
-            x2={cx + 2}
-            y1={8 + i * 24}
-            y2={8 + i * 24}
-            stroke="var(--dna-track)"
-            strokeWidth={1}
-          />
+      <svg width={thickness} height={boxH} className="block overflow-visible">
+        <defs>
+          {/* glassy capsule */}
+          <linearGradient id={`cap-${thickness}`} x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="var(--dna-cap-hi)" />
+            <stop offset="45%" stopColor="var(--dna-cap-mid)" />
+            <stop offset="100%" stopColor="var(--dna-cap-lo)" />
+          </linearGradient>
+          <clipPath id={`clip-${thickness}`}>
+            <rect x={1.5} y={0} width={capW} height={capH} rx={capW / 2} />
+          </clipPath>
+        </defs>
+
+        {/* track groove */}
+        <line x1={cx} y1={4} x2={cx} y2={trackH + 4} stroke="var(--dna-track)" strokeWidth={2} strokeLinecap="round" />
+        {Array.from({ length: Math.floor(trackH / 28) }, (_, i) => (
+          <line key={i} x1={cx - 2.5} x2={cx + 2.5} y1={8 + i * 28} y2={8 + i * 28} stroke="var(--dna-track)" strokeWidth={1} />
         ))}
 
-        <g
-          data-dna-thumb
-          transform={`translate(1 ${4 + thumbY})`}
-          role="scrollbar"
-          aria-orientation="vertical"
-          aria-label={label}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={Math.round((metrics.scrollTop / maxScroll) * 100)}
-          tabIndex={0}
-          onPointerDown={onThumbPointerDown}
-          onPointerMove={onThumbPointerMove}
-          onPointerUp={endDrag}
-          onPointerCancel={endDrag}
-          onKeyDown={onKeyDown}
-          className="cursor-grab outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-full"
-          style={{ touchAction: "none" }}
-        >
-          {/* thumb capsule */}
-          <rect
-            x={0}
-            y={0}
-            width={thickness - 2}
-            height={thumbH}
-            rx={(thickness - 2) / 2}
-            fill="var(--dna-thumb-bg)"
-            stroke="var(--dna-thumb-border)"
-            strokeWidth={1}
-          />
-          {/* base-pair rungs */}
-          {rungs.map((r, i) => (
-            <line
-              key={`r${i}`}
-              x1={r.xa}
-              y1={r.y}
-              x2={r.xb}
-              y2={r.y}
-              stroke={i % 2 === 0 ? "var(--dna-rung)" : "var(--dna-track)"}
-              strokeWidth={1}
-              opacity={0.9}
-            />
-          ))}
-          {/* helix strands */}
-          <path d={pathA} fill="none" stroke="var(--dna-a)" strokeWidth={2} strokeLinecap="round" />
-          <path d={pathB} fill="none" stroke="var(--dna-b)" strokeWidth={2} strokeLinecap="round" />
+        <g transform={`translate(2 ${4 + thumbY})`}>
+          {/* soft shadow under the whole capsule */}
+          <rect x={1.5} y={1.5} width={capW} height={capH} rx={capW / 2} fill="var(--dna-shadow)" opacity={0.55} />
+          {/* glassy capsule body */}
+          <rect x={1.5} y={0} width={capW} height={capH} rx={capW / 2} fill={`url(#cap-${thickness})`} stroke="var(--dna-thumb-border)" strokeWidth={1} />
+
+          <g clipPath={`url(#clip-${thickness})`}>
+            {/* strand shadows on the glass */}
+            {[...segA, ...segB].map((s, i) => (
+              <path key={`sh${i}`} d={s.d} fill="none" stroke="var(--dna-shadow)" strokeWidth={3.4} strokeLinecap="round" transform="translate(0.6 1.1)" opacity={0.5} />
+            ))}
+
+            {/* back strands (weave: drawn beneath rungs) */}
+            {segA.filter((s) => !s.front).map((s, i) => (
+              <path key={`ab${i}`} d={s.d} fill="none" stroke={strandStroke(false).base} strokeWidth={2} strokeLinecap="round" opacity={0.55} />
+            ))}
+            {segB.filter((s) => !s.front).map((s, i) => (
+              <path key={`bb${i}`} d={s.d} fill="none" stroke={strandStroke(true).base} strokeWidth={2} strokeLinecap="round" opacity={0.55} />
+            ))}
+
+            {/* base-pair ladder — continuous, two-tone pairs, depth-faded */}
+            {rungs.map((r, i) => {
+              if (r.len < 0.12) return null;
+              const mid = (r.xa + r.xb) / 2;
+              const depth = 0.4 + 0.6 * r.len;
+              return (
+                <g key={`r${i}`} opacity={depth}>
+                  <line x1={r.xa} y1={r.y} x2={mid} y2={r.y} stroke="var(--dna-rung-a)" strokeWidth={1.5} strokeLinecap="round" />
+                  <line x1={mid} y1={r.y} x2={r.xb} y2={r.y} stroke="var(--dna-rung-b)" strokeWidth={1.5} strokeLinecap="round" />
+                  {r.len > 0.55 && (
+                    <>
+                      <circle cx={r.xa} cy={r.y} r={1.2} fill="var(--dna-rung-a)" />
+                      <circle cx={r.xb} cy={r.y} r={1.2} fill="var(--dna-rung-b)" />
+                    </>
+                  )}
+                </g>
+              );
+            })}
+
+            {/* front strands with cylindrical shading */}
+            {segA.filter((s) => s.front).map((s, i) => (
+              <g key={`af${i}`}>
+                <path d={s.d} fill="none" stroke="var(--dna-a)" strokeWidth={2.8} strokeLinecap="round" />
+                <path d={s.d} fill="none" stroke="var(--dna-hi-a)" strokeWidth={0.9} strokeLinecap="round" transform="translate(-0.55 -0.55)" opacity={0.9} />
+              </g>
+            ))}
+            {segB.filter((s) => s.front).map((s, i) => (
+              <g key={`bf${i}`}>
+                <path d={s.d} fill="none" stroke="var(--dna-b)" strokeWidth={2.8} strokeLinecap="round" />
+                <path d={s.d} fill="none" stroke="var(--dna-hi-b)" strokeWidth={0.9} strokeLinecap="round" transform="translate(-0.55 -0.55)" opacity={0.9} />
+              </g>
+            ))}
+          </g>
+
+          {/* capsule top glass highlight */}
+          <rect x={2.6} y={1.2} width={capW - 2.2} height={Math.min(5, capH / 3)} rx={2.4} fill="var(--dna-cap-hi)" opacity={0.5} />
         </g>
       </svg>
+
+      {/* keyboard/drag surface glued to the visible helix */}
+      <div
+        data-dna-thumb
+        role="scrollbar"
+        aria-orientation="vertical"
+        aria-label={label}
+        aria-controls={controls}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={Math.min(100, Math.round((metrics.scrollTop / maxScroll) * 100))}
+        tabIndex={0}
+        onKeyDown={onKeyDown}
+        onPointerDown={onThumbPointerDown}
+        onPointerMove={onThumbPointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+        className="absolute cursor-grab rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        style={{
+          top: 4 + thumbY,
+          left: 0,
+          right: 0,
+          height: thumbH,
+          touchAction: "none",
+        }}
+      />
     </div>
   );
 }

@@ -53,7 +53,7 @@ export function ContoursClient({ caseId }: { caseId: string }) {
   const allIds = kase.structures.map((s) => s.id);
 
   return (
-    <div className="flex min-h-[calc(100dvh-3rem)] flex-col">
+    <div className="flex h-full min-h-0 flex-col">
       {/* viewport toolbar */}
       <div className="flex items-center gap-3 border-b border-border bg-card px-5 py-2.5">
         <div role="tablist" aria-label="Plane" className="flex rounded-sm border border-border bg-secondary p-0.5">
@@ -116,17 +116,17 @@ export function ContoursClient({ caseId }: { caseId: string }) {
       </div>
 
       {/* main 3-column workspace */}
-      <div className="grid flex-1 grid-cols-1 lg:grid-cols-[240px_1fr_300px]">
+      <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[240px_1fr_300px]">
         {/* structure list */}
         <aside aria-label="Structures" className="border-r border-border bg-card/60">
           <div className="relative h-full">
-            <div ref={listRef} className="dna-scroll h-full overflow-y-auto">
+            <div ref={listRef} id="contours-list" className="dna-scroll h-full overflow-y-auto">
               <div className="p-3 pr-5">
                 <StructureGroup title="Targets" structures={targets} />
                 <StructureGroup title="Organs at risk" structures={oars} className="mt-5" />
               </div>
             </div>
-            <DnaScrollbar target={listRef} className="absolute inset-y-0 right-0.5" label="Structure list" />
+            <DnaScrollbar target={listRef} controls="contours-list" className="absolute inset-y-0 right-0.5" label="Structure list" />
           </div>
         </aside>
 
@@ -148,7 +148,7 @@ export function ContoursClient({ caseId }: { caseId: string }) {
         {/* inspection panel */}
         <aside aria-label="Inspection" className="border-l border-border bg-card/60">
           <div className="relative h-full">
-            <div ref={inspectRef} className="dna-scroll h-full overflow-y-auto">
+            <div ref={inspectRef} id="contours-inspect" className="dna-scroll h-full overflow-y-auto">
             <div className="space-y-5 p-4 pr-5">
               {selectedStructureId ? (() => {
                 const s = kase.structures.find((x) => x.id === selectedStructureId)!;
@@ -236,7 +236,7 @@ export function ContoursClient({ caseId }: { caseId: string }) {
               )}
             </div>
             </div>
-            <DnaScrollbar target={inspectRef} className="absolute inset-y-0 right-0.5" label="Inspection panel" />
+            <DnaScrollbar target={inspectRef} controls="contours-inspect" className="absolute inset-y-0 right-0.5" label="Inspection panel" />
           </div>
         </aside>
       </div>

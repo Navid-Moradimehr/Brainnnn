@@ -84,7 +84,7 @@ export function NewCaseClient() {
   }
 
   return (
-    <div className="min-h-[calc(100dvh-3rem)]">
+    <div className="min-h-full">
       <div className="mx-auto max-w-4xl px-6 py-8">
         <header className="flex flex-wrap items-end justify-between gap-4">
           <div>

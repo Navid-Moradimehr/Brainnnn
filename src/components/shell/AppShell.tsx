@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTheme } from "next-themes";
 import {
   LayoutDashboard,
@@ -53,13 +53,14 @@ function ThemeToggle() {
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { cases, activeCase } = useCases();
+  const mainRef = useRef<HTMLElement | null>(null);
   const caseMatch = pathname.match(/^\/cases\/([^/]+)/);
   const activeId = caseMatch?.[1] ?? null;
   const onCaseRoute = Boolean(caseMatch);
   const isNewCase = pathname === "/cases/new";
 
   return (
-    <div className="flex min-h-dvh">
+    <div className="flex h-dvh overflow-hidden">
       {/* ── left rail ── */}
       <aside className="fixed inset-y-0 left-0 z-40 flex w-14 flex-col items-center border-r border-sidebar-border bg-sidebar py-4">
         <Link href="/" aria-label="Meridian home" className="mb-6 block">
@@ -130,8 +131,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* ── main column ── */}
-      <div className="ml-14 flex min-h-dvh flex-1 flex-col">
-        <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
+      <div className="ml-14 flex min-w-0 flex-1 flex-col">
+        <header className="z-30 border-b border-border bg-background">
           <div className="flex h-12 items-center gap-4 px-5">
             <div className="flex items-baseline gap-2.5">
               <span className="text-[15px] font-semibold tracking-tight">Meridian</span>
@@ -142,7 +143,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </span>
             <div className="ml-auto flex items-center gap-2">
               <ThemeToggle />
-              <span className="num text-xs text-muted-foreground">R. Okafor · Physics</span>
+              <span className="num text-xs text-muted-foreground">N. Moradimehr · Physics</span>
             </div>
           </div>
           {onCaseRoute && activeCase && (
@@ -155,11 +156,26 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </div>
           )}
         </header>
-        <main className="flex-1">{children}</main>
-      </div>
 
-      {/* DNA page scrollbar (document scroll) */}
-      <DnaScrollbar className="fixed inset-y-0 right-0 z-50" label="Page scrollbar" />
+        {/* scroll region — the DNA page bar owns the right rail beside it,
+            so content and panel scrollbars never collide with it */}
+        <div className="relative flex min-h-0 flex-1">
+          <main
+            ref={mainRef}
+            id="page-scroll"
+            className="dna-scroll min-h-0 min-w-0 flex-1 overflow-y-auto"
+            style={{ paddingRight: "var(--dna-bar-w)" }}
+          >
+            {children}
+          </main>
+          <DnaScrollbar
+            target={mainRef}
+            controls="page-scroll"
+            className="absolute inset-y-0 right-0 z-50"
+            label="Page scrollbar"
+          />
+        </div>
+      </div>
     </div>
   );
 }

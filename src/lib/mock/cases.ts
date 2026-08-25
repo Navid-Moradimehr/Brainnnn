@@ -79,7 +79,7 @@ export const CASES: Case[] = [
     auditTrail: audit([
       ["2026-08-19T08:41:00Z", "system", "Planning CT imported (CT_PLN, 148 slices)", "info"],
       ["2026-08-19T09:02:00Z", "system", "T1c MRI imported and registered to CT (conf. 0.94)", "success"],
-      ["2026-08-20T09:15:00Z", "R. Okafor", "Registration QC approved", "success"],
+      ["2026-08-20T09:15:00Z", "N. Moradimehr", "Registration QC approved", "success"],
       ["2026-08-22T11:07:00Z", "Dr. E. Varga", "Target volumes GTV/CTV/PTV approved", "success"],
       ["2026-08-23T16:20:00Z", "system", "Research candidate dose forecast generated (cand-0241-a)", "success"],
     ]),
