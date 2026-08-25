@@ -1,6 +1,7 @@
 {
   "name": "meridian-rt",
   "version": "0.1.0",
+  "author": "Navid Moradimehr <221453546+Navid-Moradimehr@users.noreply.github.com>",
   "private": true,
   "scripts": {
     "dev": "next dev",

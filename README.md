@@ -1,5 +1,7 @@
 # Meridian — RT Planning Research Workspace
 
+**Author & maintainer:** Navid Moradimehr
+
 A high-fidelity **frontend prototype** of a research clinical-decision-support platform for
 adult glioblastoma (GBM) radiotherapy **treatment-planning review**.
 
