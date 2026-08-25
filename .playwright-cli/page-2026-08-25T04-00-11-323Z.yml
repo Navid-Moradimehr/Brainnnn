@@ -1,0 +1,99 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "Meridian home" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - navigation "Primary" [ref=e9]:
+        - link "Dashboard" [ref=e10] [cursor=pointer]:
+          - /url: /
+      - generic "Recent cases" [ref=e16]:
+        - generic [ref=e17]: CASES
+        - link "0241" [ref=e18] [cursor=pointer]:
+          - /url: /cases/GBM-0241/review
+        - link "0198" [ref=e19] [cursor=pointer]:
+          - /url: /cases/GBM-0198/review
+        - link "0177" [ref=e20] [cursor=pointer]:
+          - /url: /cases/GBM-0177/review
+        - link "Create new case" [ref=e21] [cursor=pointer]:
+          - /url: /cases/new
+      - generic [ref=e23]:
+        - link "Scope and safety information" [ref=e24] [cursor=pointer]:
+          - /url: /about
+        - generic "Research build — not clinically approved" [ref=e27]
+    - generic [ref=e30]:
+      - banner [ref=e31]:
+        - generic [ref=e32]:
+          - generic [ref=e33]:
+            - generic [ref=e34]: Meridian
+            - generic [ref=e35]: RT Planning Research
+          - generic [ref=e36]: Research build · Not clinically approved
+          - generic [ref=e37]: R. Okafor · Physics
+        - generic [ref=e38]:
+          - generic [ref=e39]:
+            - generic [ref=e40]: GBM-0241
+            - generic [ref=e41]: Glioblastoma, right frontal
+          - navigation "Workflow stages" [ref=e42]:
+            - link "Import" [ref=e44] [cursor=pointer]:
+              - /url: /cases/GBM-0241
+            - link "Validation" [ref=e49] [cursor=pointer]:
+              - /url: /cases/GBM-0241/validation
+            - link "Contours" [ref=e54] [cursor=pointer]:
+              - /url: /cases/GBM-0241/contours
+            - link "Intent" [ref=e59] [cursor=pointer]:
+              - /url: /cases/GBM-0241/intent
+            - link "Generate" [ref=e64] [cursor=pointer]:
+              - /url: /cases/GBM-0241/generate
+            - link "Review" [ref=e69] [cursor=pointer]:
+              - /url: /cases/GBM-0241/review
+            - link "Export" [disabled] [ref=e74]:
+              - /url: /cases/GBM-0241/export
+      - main [ref=e78]:
+        - generic [ref=e80]:
+          - generic [ref=e81]:
+            - generic [ref=e82]:
+              - heading "New case — import" [level=1] [ref=e83]
+              - paragraph [ref=e84]: Synthetic case label will be assigned on creation · no patient identifiers
+            - generic [ref=e85]: GBM · 60 Gy / 30 fx
+          - region "Series import" [ref=e89]:
+            - button "Import Planning CT" [ref=e90] [cursor=pointer]:
+              - generic [ref=e91]: Select files
+              - generic [ref=e98]: Planning CT
+              - generic [ref=e99]: RTIMAGE · head fixation, thin slices preferred
+            - button "Import T1c MRI" [ref=e100] [cursor=pointer]:
+              - generic [ref=e101]: Select files
+              - generic [ref=e107]: T1c MRI
+              - generic [ref=e108]: Registered or registration-ready series
+            - button "Import RTSTRUCT — approved contours" [ref=e109] [cursor=pointer]:
+              - generic [ref=e110]: Select files
+              - generic [ref=e122]: RTSTRUCT — approved contours
+              - generic [ref=e123]: Clinician-approved target and OAR set
+            - button "Import Reference RTDOSE (optional)" [ref=e124] [cursor=pointer]:
+              - generic [ref=e125]: Select files
+              - generic [ref=e131]: Reference RTDOSE (optional) · optional
+              - generic [ref=e132]: Existing plan dose for side-by-side review
+          - region "Protocol and research notice" [ref=e133]:
+            - generic [ref=e134]:
+              - heading "Protocol selection" [level=2] [ref=e135]
+              - radiogroup [ref=e136]:
+                - generic [ref=e137] [cursor=pointer]:
+                  - radio "GBM · 60 Gy / 30 fx VMAT · adult glioblastoma · the only protocol in this MVP" [checked] [ref=e138]
+                  - radio [checked]
+                  - generic [ref=e141]:
+                    - generic [ref=e142]: GBM · 60 Gy / 30 fx
+                    - generic [ref=e143]: VMAT · adult glioblastoma · the only protocol in this MVP
+                - generic [ref=e144]:
+                  - radio "Other protocols Not available — separate protocols are introduced only with suitable data" [disabled] [ref=e145]
+                  - radio [disabled]
+                  - generic [ref=e146]:
+                    - generic [ref=e147]: Other protocols
+                    - generic [ref=e148]: Not available — separate protocols are introduced only with suitable data
+            - generic [ref=e149]:
+              - heading "Research use notice" [level=2] [ref=e150]
+              - paragraph [ref=e154]: "Data must be de-identified before upload. Meridian is a research prototype: outputs are candidate forecasts for review, never deliverable plans."
+              - generic [ref=e155]:
+                - checkbox "I confirm the data is de-identified for research use" [ref=e156]
+                - text: I confirm the data is de-identified for research use
+          - generic [ref=e157]:
+            - button "Create case and continue to validation" [disabled]
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e163] [cursor=pointer]

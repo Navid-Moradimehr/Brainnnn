@@ -1,0 +1,170 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "Meridian home" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - navigation "Primary" [ref=e9]:
+        - link "Dashboard" [ref=e10] [cursor=pointer]:
+          - /url: /
+      - generic "Recent cases" [ref=e16]:
+        - generic [ref=e17]: CASES
+        - link "0241" [ref=e18] [cursor=pointer]:
+          - /url: /cases/GBM-0241/review
+        - link "0198" [ref=e19] [cursor=pointer]:
+          - /url: /cases/GBM-0198/review
+        - link "0177" [ref=e20] [cursor=pointer]:
+          - /url: /cases/GBM-0177/review
+        - link "Create new case" [ref=e21] [cursor=pointer]:
+          - /url: /cases/new
+      - generic [ref=e23]:
+        - link "Scope and safety information" [ref=e24] [cursor=pointer]:
+          - /url: /about
+        - generic "Research build — not clinically approved" [ref=e27]
+    - generic [ref=e30]:
+      - banner [ref=e31]:
+        - generic [ref=e32]:
+          - generic [ref=e33]:
+            - generic [ref=e34]: Meridian
+            - generic [ref=e35]: RT Planning Research
+          - generic [ref=e36]: Research build · Not clinically approved
+          - generic [ref=e37]: R. Okafor · Physics
+        - generic [ref=e38]:
+          - generic [ref=e39]:
+            - generic [ref=e40]: GBM-0241
+            - generic [ref=e41]: Glioblastoma, right frontal
+          - navigation "Workflow stages" [ref=e42]:
+            - link "Import" [ref=e44] [cursor=pointer]:
+              - /url: /cases/GBM-0241
+            - link "Validation" [ref=e49] [cursor=pointer]:
+              - /url: /cases/GBM-0241/validation
+            - link "Contours" [ref=e54] [cursor=pointer]:
+              - /url: /cases/GBM-0241/contours
+            - link "Intent" [ref=e59] [cursor=pointer]:
+              - /url: /cases/GBM-0241/intent
+            - link "Generate" [ref=e64] [cursor=pointer]:
+              - /url: /cases/GBM-0241/generate
+            - link "Review" [ref=e69] [cursor=pointer]:
+              - /url: /cases/GBM-0241/review
+            - link "Export" [disabled] [ref=e74]:
+              - /url: /cases/GBM-0241/export
+      - main [ref=e78]:
+        - generic [ref=e79]:
+          - generic [ref=e80]:
+            - tablist "Plane" [ref=e81]:
+              - tab "axial" [selected] [ref=e82]
+              - tab "coronal" [ref=e83]
+              - tab "sagittal" [ref=e84]
+            - generic [ref=e85]:
+              - button "Previous slice" [ref=e86]: −
+              - slider "Slice position (49/96)" [ref=e87]: "48"
+              - button "Next slice" [ref=e88]: +
+              - generic [ref=e89]: 049/96
+            - generic [ref=e90]:
+              - button "Show all" [ref=e91]
+              - button "Hide all" [ref=e92]
+          - generic [ref=e93]:
+            - complementary "Structures" [ref=e94]:
+              - generic [ref=e98]:
+                - generic [ref=e99]:
+                  - heading "Targets" [level=3] [ref=e100]
+                  - list [ref=e101]:
+                    - listitem [ref=e102]:
+                      - button "Toggle GTV visibility GTV GTV" [ref=e103] [cursor=pointer]:
+                        - switch "Toggle GTV visibility" [checked] [ref=e104]
+                        - checkbox [checked]
+                        - generic [ref=e106]: GTV
+                        - generic [ref=e107]: GTV
+                    - listitem [ref=e111]:
+                      - button "Toggle CTV visibility CTV CTV" [ref=e112] [cursor=pointer]:
+                        - switch "Toggle CTV visibility" [checked] [ref=e113]
+                        - checkbox [checked]
+                        - generic [ref=e115]: CTV
+                        - generic [ref=e116]: CTV
+                    - listitem [ref=e120]:
+                      - button "Toggle PTV visibility PTV PTV" [ref=e121] [cursor=pointer]:
+                        - switch "Toggle PTV visibility" [checked] [ref=e122]
+                        - checkbox [checked]
+                        - generic [ref=e124]: PTV
+                        - generic [ref=e125]: PTV
+                - generic [ref=e129]:
+                  - heading "Organs at risk" [level=3] [ref=e130]
+                  - list [ref=e131]:
+                    - listitem [ref=e132]:
+                      - button "Toggle Brainstem visibility Brainstem BS" [ref=e133] [cursor=pointer]:
+                        - switch "Toggle Brainstem visibility" [checked] [ref=e134]
+                        - checkbox [checked]
+                        - generic [ref=e136]: Brainstem
+                        - generic [ref=e137]: BS
+                    - listitem [ref=e141]:
+                      - button "Toggle Optic chiasm visibility Optic chiasm CH" [ref=e142] [cursor=pointer]:
+                        - switch "Toggle Optic chiasm visibility" [checked] [ref=e143]
+                        - checkbox [checked]
+                        - generic [ref=e145]: Optic chiasm
+                        - generic [ref=e146]: CH
+                    - listitem [ref=e150]:
+                      - button "Toggle Optic nerve L visibility Optic nerve L N-L" [ref=e151] [cursor=pointer]:
+                        - switch "Toggle Optic nerve L visibility" [checked] [ref=e152]
+                        - checkbox [checked]
+                        - generic [ref=e154]: Optic nerve L
+                        - generic [ref=e155]: N-L
+                    - listitem [ref=e159]:
+                      - button "Toggle Optic nerve R visibility Optic nerve R N-R" [ref=e160] [cursor=pointer]:
+                        - switch "Toggle Optic nerve R visibility" [checked] [ref=e161]
+                        - checkbox [checked]
+                        - generic [ref=e163]: Optic nerve R
+                        - generic [ref=e164]: N-R
+                    - listitem [ref=e168]:
+                      - button "Toggle Eye L visibility Eye L E-L" [ref=e169] [cursor=pointer]:
+                        - switch "Toggle Eye L visibility" [ref=e170]
+                        - checkbox
+                        - generic [ref=e172]: Eye L
+                        - generic [ref=e173]: E-L
+                    - listitem [ref=e179]:
+                      - button "Toggle Eye R visibility Eye R E-R" [ref=e180] [cursor=pointer]:
+                        - switch "Toggle Eye R visibility" [ref=e181]
+                        - checkbox
+                        - generic [ref=e183]: Eye R
+                        - generic [ref=e184]: E-R
+                    - listitem [ref=e190]:
+                      - button "Toggle Lens L visibility Lens L L-L" [ref=e191] [cursor=pointer]:
+                        - switch "Toggle Lens L visibility" [ref=e192]
+                        - checkbox
+                        - generic [ref=e194]: Lens L
+                        - generic [ref=e195]: L-L
+                    - listitem [ref=e201]:
+                      - button "Toggle Lens R visibility Lens R L-R" [ref=e202] [cursor=pointer]:
+                        - switch "Toggle Lens R visibility" [ref=e203]
+                        - checkbox
+                        - generic [ref=e205]: Lens R
+                        - generic [ref=e206]: L-R
+                    - listitem [ref=e212]:
+                      - button "Toggle Normal brain − PTV visibility Normal brain − PTV NB" [ref=e213] [cursor=pointer]:
+                        - switch "Toggle Normal brain − PTV visibility" [ref=e214]
+                        - checkbox
+                        - generic [ref=e216]: Normal brain − PTV
+                        - generic [ref=e217]: NB
+            - region "Imaging viewport" [ref=e223]:
+              - img "MR axial slice 49 of 96" [ref=e225]:
+                - generic:
+                  - generic:
+                    - generic: MR · AXI
+                    - generic: FOV 260mm
+                  - generic:
+                    - generic: S 049/96
+                    - generic:
+                      - generic: I
+                      - generic: S
+              - paragraph [ref=e241]: Simulated T1c MRI · arrow keys scrub slices · click a structure to inspect
+            - complementary "Inspection" [ref=e242]:
+              - generic [ref=e246]:
+                - paragraph [ref=e251]: Select a structure in the list or viewer to inspect contour completeness.
+                - generic [ref=e252]:
+                  - heading "Review notes" [level=3] [ref=e253]
+                  - textbox "Review notes" [ref=e254]:
+                    - /placeholder: Findings for this structure set…
+                    - text: Target volumes consistent with diagnostic MRI. Expansion margins reviewed.
+                - status [ref=e255]:
+                  - generic [ref=e259]: Clinician-approved contours on file — dose generation unlocked.
+                - button "Continue to plan intent →" [ref=e260]
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e266] [cursor=pointer]

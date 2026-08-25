@@ -114,13 +114,13 @@ export function getSliceGeometry(plane: Plane, sliceIndex: number): SliceGeometr
     contours.push({
       structureId: "ctv",
       path: expandedBlob(c.lesion.x, c.lesion.y, c.lesion.r * lPres, 5, {
-        squash: 0.9, rotateDeg: -20, seed: seedBase + 32,
+        squash: 0.9, rotateDeg: -20, seed: seedBase + 32, n: 26, wobble: 0.05,
       }),
     });
     contours.push({
       structureId: "ptv",
       path: expandedBlob(c.lesion.x, c.lesion.y, c.lesion.r * lPres, 8.2, {
-        squash: 0.91, rotateDeg: -16, seed: seedBase + 33,
+        squash: 0.91, rotateDeg: -16, seed: seedBase + 33, n: 30, wobble: 0.035,
       }),
     });
   }
@@ -179,11 +179,11 @@ export function getSliceGeometry(plane: Plane, sliceIndex: number): SliceGeometr
   if (lesion && lPres > 0.05) {
     const shells: Array<[number, number, number]> = [
       // [levelGy, radiusGrow, wobble]
-      [60, 2.2, 0.1],
-      [57, 8.4, 0.12],
-      [54, 13.5, 0.16],
-      [45, 20, 0.22],
-      [30, 28, 0.26],
+      [60, 2.2, 0.06],
+      [57, 8.4, 0.05],
+      [54, 13.5, 0.07],
+      [45, 20, 0.09],
+      [30, 28, 0.11],
     ];
     for (const [levelGy, grow, wob] of shells) {
       isolines.push({
@@ -193,6 +193,7 @@ export function getSliceGeometry(plane: Plane, sliceIndex: number): SliceGeometr
           rotateDeg: -14 - levelGy * 0.3,
           seed: seedBase + 60 + levelGy,
           wobble: wob,
+          n: 30,
         }),
       });
     }

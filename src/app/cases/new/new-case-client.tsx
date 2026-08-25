@@ -36,7 +36,7 @@ const SLOTS: Slot[] = [
   { id: "ct", title: "Planning CT", desc: "RTIMAGE · head fixation, thin slices preferred", icon: ScanLine, required: true, modality: "CT" },
   { id: "mr", title: "T1c MRI", desc: "Registered or registration-ready series", icon: Layers, required: true, modality: "MR" },
   { id: "rtstruct", title: "RTSTRUCT — approved contours", desc: "Clinician-approved target and OAR set", icon: Boxes, required: true },
-  { id: "rtdose", title: "Reference RTDOSE (optional)", desc: "Existing plan dose for side-by-side review", icon: FileUp, required: false },
+  { id: "rtdose", title: "Reference RTDOSE", desc: "Optional — existing plan dose for side-by-side review", icon: FileUp, required: false },
 ];
 
 export function NewCaseClient() {
@@ -123,7 +123,7 @@ export function NewCaseClient() {
                   {st === "receiving" && <Loader2 className="h-4 w-4 animate-spin text-status-info" aria-hidden />}
                   {(st === "received" || st === "checked") && <CheckCircle2 className="h-4 w-4 text-status-ok" aria-hidden />}
                 </span>
-                <span className="text-sm font-medium">{s.title}{!s.required && " · optional"}</span>
+                <span className="text-sm font-medium">{s.title}{!s.required && <span className="ml-1.5 text-muted-foreground">· optional</span>}</span>
                 <span className="text-xs leading-relaxed text-muted-foreground">{s.desc}</span>
                 {st === "received" && (
                   <span className="num text-[11px] text-status-info">Checking series integrity…</span>

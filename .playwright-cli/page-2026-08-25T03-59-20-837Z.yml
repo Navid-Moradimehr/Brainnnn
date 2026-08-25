@@ -1,0 +1,125 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "Meridian home" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - navigation "Primary" [ref=e9]:
+        - link "Dashboard" [ref=e10] [cursor=pointer]:
+          - /url: /
+      - generic "Recent cases" [ref=e16]:
+        - generic [ref=e17]: CASES
+        - link "0241" [ref=e18] [cursor=pointer]:
+          - /url: /cases/GBM-0241/review
+        - link "0198" [ref=e19] [cursor=pointer]:
+          - /url: /cases/GBM-0198/review
+        - link "0177" [ref=e20] [cursor=pointer]:
+          - /url: /cases/GBM-0177/review
+        - link "Create new case" [ref=e21] [cursor=pointer]:
+          - /url: /cases/new
+      - generic [ref=e23]:
+        - link "Scope and safety information" [ref=e24] [cursor=pointer]:
+          - /url: /about
+        - generic "Research build — not clinically approved" [ref=e27]
+    - generic [ref=e30]:
+      - banner [ref=e31]:
+        - generic [ref=e32]:
+          - generic [ref=e33]:
+            - generic [ref=e34]: Meridian
+            - generic [ref=e35]: RT Planning Research
+          - generic [ref=e36]: Research build · Not clinically approved
+          - generic [ref=e37]: R. Okafor · Physics
+        - generic [ref=e38]:
+          - generic [ref=e39]:
+            - generic [ref=e40]: GBM-0241
+            - generic [ref=e41]: Glioblastoma, right frontal
+          - navigation "Workflow stages" [ref=e42]:
+            - link "Import" [ref=e44] [cursor=pointer]:
+              - /url: /cases/GBM-0241
+            - link "Validation" [ref=e49] [cursor=pointer]:
+              - /url: /cases/GBM-0241/validation
+            - link "Contours" [ref=e54] [cursor=pointer]:
+              - /url: /cases/GBM-0241/contours
+            - link "Intent" [ref=e59] [cursor=pointer]:
+              - /url: /cases/GBM-0241/intent
+            - link "Generate" [ref=e64] [cursor=pointer]:
+              - /url: /cases/GBM-0241/generate
+            - link "Review" [ref=e69] [cursor=pointer]:
+              - /url: /cases/GBM-0241/review
+            - link "Export" [disabled] [ref=e74]:
+              - /url: /cases/GBM-0241/export
+      - main [ref=e78]:
+        - generic [ref=e80]:
+          - generic [ref=e81]:
+            - generic [ref=e82]:
+              - paragraph [ref=e83]: Data validation & registration
+              - heading "GBM-0198" [level=1] [ref=e84]
+            - generic [ref=e85]: Data Review
+          - generic [ref=e87]:
+            - region "Series" [ref=e88]:
+              - generic [ref=e89]:
+                - generic [ref=e90]:
+                  - generic [ref=e91]: CT_PLN
+                  - generic [ref=e98]: warning
+                - paragraph [ref=e99]: Planning CT, head fixation
+                - generic [ref=e100]:
+                  - generic [ref=e101]:
+                    - term [ref=e102]: Slices
+                    - definition [ref=e103]: 141 slices
+                  - generic [ref=e104]:
+                    - term [ref=e105]: Thickness
+                    - definition [ref=e106]: 2 mm
+                  - generic [ref=e107]:
+                    - term [ref=e108]: Received
+                    - definition [ref=e109]: 21/08/2026
+              - generic [ref=e110]:
+                - generic [ref=e111]:
+                  - generic [ref=e112]: MR_T1c_DEF
+                  - generic [ref=e118]: warning
+                - paragraph [ref=e119]: T1c MRI, registration suspect near vertex
+                - generic [ref=e120]:
+                  - generic [ref=e121]:
+                    - term [ref=e122]: Slices
+                    - definition [ref=e123]: 168 slices
+                  - generic [ref=e124]:
+                    - term [ref=e125]: Thickness
+                    - definition [ref=e126]: 1.2 mm
+                  - generic [ref=e127]:
+                    - term [ref=e128]: Received
+                    - definition [ref=e129]: 21/08/2026
+              - generic [ref=e130]:
+                - heading "Registration confidence" [level=3] [ref=e131]
+                - generic [ref=e132]: "0.71"
+                - paragraph [ref=e134]: Below 0.85 review threshold near vertex slices.
+            - region "Registration comparison" [ref=e135]:
+              - generic [ref=e136]:
+                - generic [ref=e137]:
+                  - generic [ref=e138]:
+                    - tablist "Comparison mode" [ref=e139]:
+                      - tab "overlay" [selected] [ref=e140]
+                      - tab "side" [ref=e141]
+                    - generic [ref=e142]: CT_PLN · MR_T1c_DEF · slice 49
+                  - generic [ref=e143]:
+                    - generic [ref=e144]:
+                      - img "CT axial preview" [ref=e146]
+                      - img "MR axial preview" [ref=e156]
+                      - generic [ref=e166]: MR
+                      - generic [ref=e167]: CT
+                    - generic [ref=e168]:
+                      - generic [ref=e169]: Overlay wipe position
+                      - slider "Overlay wipe position" [ref=e170]: "52"
+                - generic [ref=e171]:
+                  - text: Scrub slice
+                  - slider "Slice position" [ref=e172]: "48"
+              - alert [ref=e173]:
+                - heading "Registration warnings" [level=3] [ref=e174]
+                - list [ref=e177]:
+                  - listitem [ref=e178]: MRI-to-CT registration requires review — confidence 0.71 below threshold 0.85 near vertex slices.
+                  - listitem [ref=e179]: CT slice thickness 2.0 mm exceeds protocol preference of ≤ 1.5 mm; acceptable with review.
+              - generic [ref=e180]:
+                - paragraph [ref=e181]: MRI-to-CT registration requires review before contours can be used for dose work.
+                - generic [ref=e182]:
+                  - button "Return to import" [ref=e183]
+                  - button "Adjust registration" [ref=e184]
+                  - button "Approve" [ref=e185]
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e191] [cursor=pointer]

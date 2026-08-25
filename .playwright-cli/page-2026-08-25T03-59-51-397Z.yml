@@ -1,0 +1,83 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "Meridian home" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - navigation "Primary" [ref=e9]:
+        - link "Dashboard" [ref=e10] [cursor=pointer]:
+          - /url: /
+      - generic "Recent cases" [ref=e16]:
+        - generic [ref=e17]: CASES
+        - link "0241" [ref=e18] [cursor=pointer]:
+          - /url: /cases/GBM-0241/review
+        - link "0198" [ref=e19] [cursor=pointer]:
+          - /url: /cases/GBM-0198/review
+        - link "0177" [ref=e20] [cursor=pointer]:
+          - /url: /cases/GBM-0177/review
+        - link "Create new case" [ref=e21] [cursor=pointer]:
+          - /url: /cases/new
+      - generic [ref=e23]:
+        - link "Scope and safety information" [ref=e24] [cursor=pointer]:
+          - /url: /about
+        - generic "Research build — not clinically approved" [ref=e27]
+    - generic [ref=e30]:
+      - banner [ref=e31]:
+        - generic [ref=e32]:
+          - generic [ref=e33]:
+            - generic [ref=e34]: Meridian
+            - generic [ref=e35]: RT Planning Research
+          - generic [ref=e36]: Research build · Not clinically approved
+          - generic [ref=e37]: R. Okafor · Physics
+        - generic [ref=e38]:
+          - generic [ref=e39]:
+            - generic [ref=e40]: GBM-0241
+            - generic [ref=e41]: Glioblastoma, right frontal
+          - navigation "Workflow stages" [ref=e42]:
+            - link "Import" [ref=e44] [cursor=pointer]:
+              - /url: /cases/GBM-0241
+            - link "Validation" [ref=e49] [cursor=pointer]:
+              - /url: /cases/GBM-0241/validation
+            - link "Contours" [ref=e54] [cursor=pointer]:
+              - /url: /cases/GBM-0241/contours
+            - link "Intent" [ref=e59] [cursor=pointer]:
+              - /url: /cases/GBM-0241/intent
+            - link "Generate" [ref=e64] [cursor=pointer]:
+              - /url: /cases/GBM-0241/generate
+            - link "Review" [ref=e69] [cursor=pointer]:
+              - /url: /cases/GBM-0241/review
+            - link "Export" [disabled] [ref=e74]:
+              - /url: /cases/GBM-0241/export
+      - main [ref=e78]:
+        - generic [ref=e80]:
+          - generic [ref=e81]:
+            - generic [ref=e82]:
+              - paragraph [ref=e83]: Candidate generation
+              - heading "GBM-0241" [level=1] [ref=e84]
+            - generic [ref=e85]: Research candidate dose forecast
+          - generic [ref=e86]:
+            - region "Job progress" [ref=e87]:
+              - generic [ref=e88]:
+                - heading "Job stages" [level=2] [ref=e89]
+                - generic [ref=e90]: 0%
+              - list [ref=e93]:
+                - listitem [ref=e94]:
+                  - paragraph [ref=e107]: Validating inputs
+                - listitem [ref=e108]:
+                  - paragraph [ref=e121]: Registering images
+                - listitem [ref=e122]:
+                  - paragraph [ref=e135]: Preparing structure maps
+                - listitem [ref=e136]:
+                  - paragraph [ref=e149]: Estimating achievable dose
+                - listitem [ref=e150]:
+                  - paragraph [ref=e163]: Evaluating constraints
+                - listitem [ref=e164]:
+                  - paragraph [ref=e176]: Preparing review package
+              - generic [ref=e178]:
+                - paragraph [ref=e179]: Candidate already generated for this case.
+                - button "Open review workspace →" [ref=e183]
+            - complementary "Forecast visualisation" [ref=e184]:
+              - note [ref=e186]:
+                - paragraph [ref=e187]: What you are generating is a research candidate dose forecast.
+                - paragraph [ref=e188]: It estimates achievable dose for review and discussion. It is not a treatment plan and must be recalculated in an approved local TPS with patient-specific QA.
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e194] [cursor=pointer]

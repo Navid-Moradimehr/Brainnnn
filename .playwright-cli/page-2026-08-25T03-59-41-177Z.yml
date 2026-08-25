@@ -1,0 +1,143 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "Meridian home" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - navigation "Primary" [ref=e9]:
+        - link "Dashboard" [ref=e10] [cursor=pointer]:
+          - /url: /
+      - generic "Recent cases" [ref=e16]:
+        - generic [ref=e17]: CASES
+        - link "0241" [ref=e18] [cursor=pointer]:
+          - /url: /cases/GBM-0241/review
+        - link "0198" [ref=e19] [cursor=pointer]:
+          - /url: /cases/GBM-0198/review
+        - link "0177" [ref=e20] [cursor=pointer]:
+          - /url: /cases/GBM-0177/review
+        - link "Create new case" [ref=e21] [cursor=pointer]:
+          - /url: /cases/new
+      - generic [ref=e23]:
+        - link "Scope and safety information" [ref=e24] [cursor=pointer]:
+          - /url: /about
+        - generic "Research build — not clinically approved" [ref=e27]
+    - generic [ref=e30]:
+      - banner [ref=e31]:
+        - generic [ref=e32]:
+          - generic [ref=e33]:
+            - generic [ref=e34]: Meridian
+            - generic [ref=e35]: RT Planning Research
+          - generic [ref=e36]: Research build · Not clinically approved
+          - generic [ref=e37]: R. Okafor · Physics
+        - generic [ref=e38]:
+          - generic [ref=e39]:
+            - generic [ref=e40]: GBM-0241
+            - generic [ref=e41]: Glioblastoma, right frontal
+          - navigation "Workflow stages" [ref=e42]:
+            - link "Import" [ref=e44] [cursor=pointer]:
+              - /url: /cases/GBM-0241
+            - link "Validation" [ref=e49] [cursor=pointer]:
+              - /url: /cases/GBM-0241/validation
+            - link "Contours" [ref=e54] [cursor=pointer]:
+              - /url: /cases/GBM-0241/contours
+            - link "Intent" [ref=e59] [cursor=pointer]:
+              - /url: /cases/GBM-0241/intent
+            - link "Generate" [ref=e64] [cursor=pointer]:
+              - /url: /cases/GBM-0241/generate
+            - link "Review" [ref=e69] [cursor=pointer]:
+              - /url: /cases/GBM-0241/review
+            - link "Export" [disabled] [ref=e74]:
+              - /url: /cases/GBM-0241/export
+      - main [ref=e78]:
+        - generic [ref=e80]:
+          - generic [ref=e81]:
+            - generic [ref=e82]:
+              - paragraph [ref=e83]: Plan intent — protocol driven
+              - heading "GBM-0241" [level=1] [ref=e84]
+            - generic [ref=e85]: GBM · 60 Gy / 30 fx
+          - generic [ref=e89]:
+            - region "Intent fields" [ref=e90]:
+              - generic [ref=e91]:
+                - text: Diagnosis
+                - textbox "Diagnosis" [ref=e92]: Glioblastoma, right frontal
+              - generic [ref=e93]:
+                - generic [ref=e94]:
+                  - text: Prescription
+                  - textbox "Prescription" [ref=e95]: 60 Gy / 30 fx
+                - generic [ref=e96]:
+                  - text: Dose per fraction (Gy)
+                  - textbox "Dose per fraction (Gy) Locked by protocol — deviations require protocol owner sign-off." [ref=e97]: "2.00"
+                  - paragraph [ref=e98]: Locked by protocol — deviations require protocol owner sign-off.
+              - generic [ref=e99]:
+                - generic [ref=e100]:
+                  - text: Technique
+                  - combobox "Technique" [disabled] [ref=e101]
+                  - combobox [disabled] [ref=e102]
+                - generic [ref=e103]:
+                  - text: Machine template
+                  - combobox "Machine template" [disabled] [ref=e104]
+                  - combobox [disabled] [ref=e105]
+              - group "Target coverage objectives" [ref=e106]:
+                - list [ref=e108]:
+                  - listitem [ref=e109]:
+                    - generic [ref=e110]:
+                      - generic [ref=e114]: PTV D95%
+                      - generic [ref=e115]: protocol
+                    - generic [ref=e116]: ≥ 57.0 Gy
+                  - listitem [ref=e117]:
+                    - generic [ref=e118]:
+                      - generic [ref=e122]: PTV D2%
+                      - generic [ref=e123]: protocol
+                    - generic [ref=e124]: ≤ 63.0 Gy
+                  - listitem [ref=e125]:
+                    - generic [ref=e126]: GTV D99%
+                    - generic [ref=e131]: ≥ 60.0 Gy
+              - group "OAR priorities" [ref=e132]:
+                - paragraph [ref=e134]: Priority order guides the trade-off scan during candidate generation.
+                - list [ref=e135]:
+                  - listitem [ref=e136]:
+                    - generic [ref=e137]: Brainstem
+                    - switch "Prioritise Brainstem" [checked] [ref=e138]
+                    - checkbox [checked]
+                  - listitem [ref=e139]:
+                    - generic [ref=e140]: Optic chiasm
+                    - switch "Prioritise Optic chiasm" [checked] [ref=e141]
+                    - checkbox [checked]
+                  - listitem [ref=e142]:
+                    - generic [ref=e143]: Optic nerves
+                    - switch "Prioritise Optic nerves" [checked] [ref=e144]
+                    - checkbox [checked]
+                  - listitem [ref=e145]:
+                    - generic [ref=e146]: Lenses
+                    - switch "Prioritise Lenses" [checked] [ref=e147]
+                    - checkbox [checked]
+              - generic [ref=e148]: Intent confirmed — continue to generation.
+            - complementary "Intent summary" [ref=e152]:
+              - generic [ref=e153]:
+                - generic [ref=e154]:
+                  - heading "Intent summary" [level=2] [ref=e155]
+                  - generic [ref=e156]:
+                    - generic [ref=e157]:
+                      - term [ref=e158]: Site
+                      - definition [ref=e159]: Brain · right frontal lesion
+                    - generic [ref=e160]:
+                      - term [ref=e161]: Rx
+                      - definition [ref=e162]: 60 Gy / 30 fx
+                    - generic [ref=e163]:
+                      - term [ref=e164]: Technique
+                      - definition [ref=e165]: VMAT dual-arc
+                    - generic [ref=e166]:
+                      - term [ref=e167]: Machine
+                      - definition [ref=e168]: SY-MERC-01
+                    - generic [ref=e169]:
+                      - term [ref=e170]: Contours
+                      - definition [ref=e171]: approved
+                    - generic [ref=e172]:
+                      - term [ref=e173]: Registration
+                      - definition [ref=e174]: approved
+                - generic [ref=e175]:
+                  - heading "Delivery concept" [level=2] [ref=e176]
+                  - img "Dual arc gantry schematic" [ref=e177]
+                  - paragraph [ref=e186]: Two coplanar arcs, collimator 30°/330° — geometric illustration only.
+                - paragraph [ref=e187]: This screen intentionally exposes no model or optimisation settings. Meridian is protocol-driven; the forecast engine runs behind the API boundary.
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e193] [cursor=pointer]
