@@ -42,3 +42,6 @@ next-env.d.ts
 
 # Obsidian workspace churn
 .obsidian/
+
+# Playwright CLI session artifacts
+.playwright-cli/
