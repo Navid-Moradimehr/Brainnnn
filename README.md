@@ -69,8 +69,8 @@ Next.js frontend  →  Next.js API boundary  →  FastAPI DICOM/ML workers
 - The mock layer is the swap point: `src/lib/mock/*` → FastAPI REST endpoints; context actions
   are named after the intended API calls; job polling contract already shaped by the Generate UI
 
-Full notes live in the Obsidian vault: [`docs/obsidian-vault`](docs/obsidian-vault/00%20Project%20Overview.md)
-(vision, workflow, roadmap, architecture, data assumptions, design system, open questions).
+Project planning notes are kept in a local Obsidian vault (`docs/obsidian-vault/`) —
+intentionally **not** part of this repository.
 
 ## What is mocked vs what is real
 
@@ -98,7 +98,6 @@ Full notes live in the Obsidian vault: [`docs/obsidian-vault`](docs/obsidian-vau
 ## Repository layout
 
 ```
-docs/obsidian-vault/     project "second brain" (10 notes)
 src/types/               domain models (DTO contract mirror)
 src/lib/mock/            mock data layer (backend swap point)
 src/lib/phantom/         procedural slice geometry engine

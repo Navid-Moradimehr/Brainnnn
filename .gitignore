@@ -48,3 +48,7 @@ next-env.d.ts
 
 # Static export output (GitHub Pages build artifact)
 out/
+
+# Local-only documents (never pushed)
+USER-GUIDE.md
+docs/obsidian-vault/
