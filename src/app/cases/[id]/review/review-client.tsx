@@ -25,6 +25,7 @@ import { ConstraintTable, mapNameToId } from "@/components/viewer/ConstraintTabl
 import { getStructureColor } from "@/components/viewer/structureColors";
 import { StatusBadge, ProtocolTag } from "@/components/primitives/StatusBadge";
 import { useCases } from "@/context/CaseContext";
+import { useI18n } from "@/i18n/I18nProvider";
 import { useViewer, PLANE_TOTAL_SLICES, type Plane } from "@/context/ViewerContext";
 import { cn } from "@/lib/utils";
 import type { Structure } from "@/types";
@@ -41,6 +42,7 @@ function StructureGroup({
   className?: string;
 }) {
   const { visibleIds, toggleVisible, select, selectedStructureId } = useViewer();
+  const { t, td } = useI18n();
   return (
     <div className={className}>
       <h3 className="text-label mb-2 px-1 text-muted-foreground">{title}</h3>
@@ -60,9 +62,9 @@ function StructureGroup({
                   selected ? "bg-accent" : "hover:bg-accent/60",
                 )}
               >
-                <Switch checked={visible} onCheckedChange={() => toggleVisible(s.id)} aria-label={`Toggle ${s.name}`} className="scale-[0.8]" />
+                <Switch checked={visible} onCheckedChange={() => toggleVisible(s.id)} aria-label={`${t("contours.toggleVisibility")}: ${td(s.name)}`} className="scale-[0.8]" />
                 <span aria-hidden className="h-2 w-2 rounded-full shrink-0" style={{ background: getStructureColor(s.id), opacity: visible ? 1 : 0.35 }} />
-                <span className={cn("truncate text-xs", !visible && "text-muted-foreground")}>{s.name}</span>
+                <span className={cn("truncate text-xs", !visible && "text-muted-foreground")}>{td(s.name)}</span>
               </div>
             </li>
           );
@@ -75,6 +77,7 @@ function StructureGroup({
 export function ReviewClient({ caseId }: { caseId: string }) {
   const router = useRouter();
   const { getCase, recordReviewDecision, setActiveCaseId } = useCases();
+  const { t, td } = useI18n();
   const kase = getCase(caseId);
   const viewer = useViewer();
   const {
@@ -84,9 +87,11 @@ export function ReviewClient({ caseId }: { caseId: string }) {
     washOn, setWashOn, washLevel, setWashLevel,
     isolinesOn, setIsolinesOn,
   } = viewer;
-  const [notes, setNotes] = useState(
+  const defaultNotes = td(
     "Left optic nerve at 52.4 Gy accepted to secure D95 coverage; physics concurrence recorded in audit.",
   );
+  const [editedNotes, setEditedNotes] = useState<string | null>(null);
+  const notes = editedNotes ?? defaultNotes;
   const [highlightDefId, setHighlightDefId] = useState<string | null>(null);
   const structRef = useRef<HTMLDivElement>(null);
   const evalRef = useRef<HTMLDivElement>(null);
@@ -133,12 +138,12 @@ export function ReviewClient({ caseId }: { caseId: string }) {
       <div className="p-10">
         <div className="mx-auto max-w-md rounded-md border border-border bg-card p-6 text-center">
           <FlaskConical className="mx-auto h-5 w-5 text-muted-foreground" aria-hidden />
-          <h1 className="mt-2 text-sm font-medium">No candidate forecast yet</h1>
+          <h1 className="mt-2 text-sm font-medium">{t("review.noCandidateTitle")}</h1>
           <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-            Generate a research candidate dose forecast before opening the review workspace.
+            {t("review.noCandidateBody")}
           </p>
           <Button asChild className="mt-4">
-            <Link href={`/cases/${caseId}/generate`}>Go to generation</Link>
+            <Link href={`/cases/${caseId}/generate`}>{t("review.goToGeneration")}</Link>
           </Button>
         </div>
       </div>
@@ -153,7 +158,7 @@ export function ReviewClient({ caseId }: { caseId: string }) {
       <div className="flex items-center justify-center gap-2 border-b border-warn/25 bg-warn-soft px-4 py-1.5" role="note">
         <Info className="h-3.5 w-3.5 shrink-0 text-status-warn" aria-hidden />
         <p className="text-center text-[11px] font-medium tracking-wide text-status-warn">
-          Research candidate only. Requires local TPS recalculation, patient-specific QA, and clinician approval.
+          {t("review.disclaimer")}
         </p>
       </div>
 
@@ -176,13 +181,13 @@ export function ReviewClient({ caseId }: { caseId: string }) {
                 plane === p ? "bg-accent text-foreground" : "text-muted-foreground hover:text-foreground",
               )}
             >
-              {p.slice(0, 3)}
+              {t(`contours.${p}` as never)}
             </button>
           ))}
         </div>
 
         {/* raw vs processed image */}
-        <div role="tablist" aria-label="Image mode" className="flex rounded-sm border border-border bg-secondary p-0.5">
+        <div role="tablist" aria-label={t("review.comparisonLabel")} className="flex rounded-sm border border-border bg-secondary p-0.5">
           {(["raw", "processed"] as const).map((m) => (
             <button
               key={m}
@@ -194,19 +199,19 @@ export function ReviewClient({ caseId }: { caseId: string }) {
                 imageMode === m ? "bg-accent text-foreground" : "text-muted-foreground hover:text-foreground",
               )}
             >
-              {m === "raw" ? "Raw image" : "Processed"}
+              {m === "raw" ? t("review.raw") : t("review.processed")}
             </button>
           ))}
         </div>
 
         <Select value={compareMode} onValueChange={(v) => setCompareMode(v as typeof compareMode)}>
-          <SelectTrigger size="sm" className="w-[170px]" aria-label="Dose comparison mode" disabled={imageMode === "raw"}>
+          <SelectTrigger size="sm" className="w-[170px]" aria-label={t("review.comparisonLabel")} disabled={imageMode === "raw"}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="candidate">Candidate dose</SelectItem>
-            <SelectItem value="reference">Reference plan dose</SelectItem>
-            <SelectItem value="split">Split view</SelectItem>
+            <SelectItem value="candidate">{t("review.candidateDose")}</SelectItem>
+            <SelectItem value="reference">{t("review.referenceDose")}</SelectItem>
+            <SelectItem value="split">{t("review.splitView")}</SelectItem>
           </SelectContent>
         </Select>
 
@@ -215,9 +220,9 @@ export function ReviewClient({ caseId }: { caseId: string }) {
             checked={washOn && imageMode === "processed"}
             disabled={imageMode === "raw"}
             onCheckedChange={setWashOn}
-            aria-label="Toggle dose wash"
+            aria-label={t("review.toggleWash")}
           />
-          Wash
+          {t("review.wash")}
         </label>
         <Slider
           value={[washLevel]}
@@ -227,40 +232,40 @@ export function ReviewClient({ caseId }: { caseId: string }) {
           disabled={imageMode === "raw"}
           onValueChange={([v]) => setWashLevel(v)}
           className="w-28"
-          aria-label="Dose wash opacity"
+          aria-label={t("review.washOpacity")}
         />
         <label className={cn("flex items-center gap-2 text-xs", imageMode === "raw" ? "opacity-40" : "text-muted-foreground")}>
           <Switch
             checked={isolinesOn && imageMode === "processed"}
             disabled={imageMode === "raw"}
             onCheckedChange={setIsolinesOn}
-            aria-label="Toggle isodose lines"
+            aria-label={t("review.toggleIsolines")}
           />
-          Isodose lines
+          {t("review.isolines")}
         </label>
 
         <div className="ml-auto flex items-center gap-2">
-          <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => stepSlice(-1)} aria-label="Previous slice">−</Button>
+          <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => stepSlice(-1)} aria-label={t("review.prevSlice")}>−</Button>
           <span className="num w-14 text-[11px] text-muted-foreground">
             {String(Math.min(sliceIndex, total - 1) + 1).padStart(3, "0")}/{total}
           </span>
-          <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => stepSlice(1)} aria-label="Next slice">+</Button>
+          <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => stepSlice(1)} aria-label={t("review.nextSlice")}>+</Button>
         </div>
       </div>
 
       {/* workspace */}
       <div className="grid min-h-0 flex-1 grid-cols-1 xl:grid-cols-[220px_1fr_380px]">
         {/* structures */}
-        <aside aria-label="Structure visibility" className="border-r border-border bg-card/60">
+        <aside aria-label={t("review.structures")} className="border-r border-border bg-card/60">
           <div className="relative h-full h-full">
             <div ref={structRef} id="review-structures" className="dna-scroll h-full overflow-y-auto">
             <div className="space-y-5 p-3 pr-5">
-              <StructureGroup title="Targets" list={targets} />
-              <StructureGroup title="Organs at risk" list={oars} className="mt-5" />
+              <StructureGroup title={t("contours.targets")} list={targets} />
+              <StructureGroup title={t("contours.oars")} list={oars} className="mt-5" />
 
               {/* isodose legend */}
               <div className="rounded-sm border border-border p-2.5">
-                <h3 className="text-label mb-2 text-muted-foreground">Isodose legend</h3>
+                <h3 className="text-label mb-2 text-muted-foreground">{t("review.legend")}</h3>
                 <ul className="num space-y-1.5 text-[11px] text-muted-foreground">
                   {[["60 Gy", "#ff5c49"], ["57 Gy", "#ff8a4d"], ["54 Gy", "#e8d24a"], ["45 Gy", "#43d0b0"], ["30 Gy", "#3aa6d8"]].map(([label, color]) => (
                     <li key={label} className="flex items-center gap-2">
@@ -277,7 +282,7 @@ export function ReviewClient({ caseId }: { caseId: string }) {
         </aside>
 
         {/* viewer */}
-        <section aria-label="Dose overlay viewer" className="flex flex-col p-4">
+        <section aria-label={t("review.dvh")} className="flex flex-col p-4">
           <motion.div
             ref={viewportRef}
             initial={{ opacity: 0 }}
@@ -295,10 +300,10 @@ export function ReviewClient({ caseId }: { caseId: string }) {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="absolute bottom-3 right-3 w-[46%] cursor-grab touch-none overflow-hidden rounded-md border border-info/40 shadow-xl active:cursor-grabbing"
-                title="Drag to reposition the reference panel"
+                title={t("review.refPanelHint")}
               >
                 <SliceViewport modality="ct" doseVariant="reference" showContours={false} className="aspect-square w-full pointer-events-none" />
-                <span className="pointer-events-none absolute left-2 top-2 rounded-sm bg-black/60 px-1.5 py-0.5 font-mono text-[10px] text-white/85">REFERENCE · CT</span>
+                <span className="pointer-events-none absolute left-2 top-2 rounded-sm bg-black/60 px-1.5 py-0.5 font-mono text-[10px] text-white/85">{t("review.refPanelLabel")}</span>
                 <Move className="pointer-events-none absolute right-2 top-2 h-3.5 w-3.5 text-white/70" aria-hidden />
               </motion.div>
             )}
@@ -313,18 +318,18 @@ export function ReviewClient({ caseId }: { caseId: string }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 }}
             >
-              <p className="text-label text-muted-foreground">Trade-off in this candidate</p>
+              <p className="text-label text-muted-foreground">{t("review.tradeOffTitle")}</p>
               <div className="mt-2 flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px]">
                 <span>
-                  Optic nerve L{" "}
+                  {t("review.tradeOffNerve")}{" "}
                   <b className="num text-status-warn">{tradeOff.nerve.candidateValueGy.toFixed(1)} Gy</b>
-                  <span className="ml-1.5 text-[11px] text-muted-foreground">+{(tradeOff.nerve.candidateValueGy - (tradeOff.nerve.referenceValueGy ?? 0)).toFixed(1)} vs ref</span>
+                  <span className="ml-1.5 text-[11px] text-muted-foreground">+{(tradeOff.nerve.candidateValueGy - (tradeOff.nerve.referenceValueGy ?? 0)).toFixed(1)} {t("common.vsRef")}</span>
                 </span>
                 <span aria-hidden className="text-muted-foreground">⇄</span>
                 <span>
-                  PTV D95{" "}
+                  {t("review.tradeOffPtv")}{" "}
                   <b className="num text-status-ok">{tradeOff.ptv.candidateValueGy.toFixed(1)} Gy</b>
-                  <span className="ml-1.5 text-[11px] text-muted-foreground">+{(tradeOff.ptv.candidateValueGy - (tradeOff.ptv.referenceValueGy ?? 0)).toFixed(1)} vs ref</span>
+                  <span className="ml-1.5 text-[11px] text-muted-foreground">+{(tradeOff.ptv.candidateValueGy - (tradeOff.ptv.referenceValueGy ?? 0)).toFixed(1)} {t("common.vsRef")}</span>
                 </span>
                 <Button
                   variant="ghost"
@@ -335,7 +340,7 @@ export function ReviewClient({ caseId }: { caseId: string }) {
                     setHighlightDefId("c-nerves-max");
                   }}
                 >
-                  Inspect trade-off
+                  {t("review.inspectTradeOff")}
                 </Button>
               </div>
             </motion.div>
@@ -343,14 +348,14 @@ export function ReviewClient({ caseId }: { caseId: string }) {
         </section>
 
         {/* right column */}
-        <aside aria-label="Evaluation" className="border-l border-border bg-card/60">
+        <aside aria-label={t("review.decision")} className="border-l border-border bg-card/60">
           <div className="relative h-full h-full">
             <div ref={evalRef} id="review-eval" className="dna-scroll h-full overflow-y-auto">
             <div className="space-y-5 p-4 pr-5">
               {/* DVH */}
               <section aria-label="DVH">
                 <div className="mb-2 flex items-center justify-between">
-                  <h2 className="text-label text-muted-foreground">Dose–volume histogram</h2>
+                  <h2 className="text-label text-muted-foreground">{t("review.dvh")}</h2>
                   <ProtocolTag label={`CI ${plan.metrics.conformityIndex}`} />
                 </div>
                 <div
@@ -388,7 +393,7 @@ export function ReviewClient({ caseId }: { caseId: string }) {
 
               {/* constraints */}
               <section aria-label="Constraints">
-                <h2 className="text-label mb-2 text-muted-foreground">Protocol constraints</h2>
+                <h2 className="text-label mb-2 text-muted-foreground">{t("review.constraints")}</h2>
                 <ConstraintTable
                   plan={plan}
                   selectedId={selectedStructureId}
@@ -396,16 +401,16 @@ export function ReviewClient({ caseId }: { caseId: string }) {
                   highlightDefId={highlightDefId}
                 />
                 <p className="mt-2 text-[10px] leading-relaxed text-muted-foreground">
-                  Values are synthetic prototype data. Review-band metrics require physicist judgement; a critical breach would block export.
+                  {t("review.constraintsNote")}
                 </p>
               </section>
 
               {/* metrics strip */}
               <section aria-label="Plan metrics" className="grid grid-cols-3 gap-2">
                 {[
-                  ["PTV D95", `${plan.metrics.ptvD95Gy.toFixed(1)} Gy`],
-                  ["Conformity", plan.metrics.conformityIndex.toFixed(2)],
-                  ["NB V40", `${plan.metrics.normalBrainV40Pct.toFixed(1)}%`],
+                  [t("review.metricPtvD95"), `${plan.metrics.ptvD95Gy.toFixed(1)} Gy`],
+                  [t("review.metricConformity"), plan.metrics.conformityIndex.toFixed(2)],
+                  [t("review.metricNbV40"), `${plan.metrics.normalBrainV40Pct.toFixed(1)}%`],
                 ].map(([k, v]) => (
                   <div key={k} className="rounded-sm border border-border bg-secondary/60 px-2.5 py-2">
                     <p className="text-[9px] uppercase tracking-[0.12em] text-muted-foreground">{k}</p>
@@ -416,30 +421,30 @@ export function ReviewClient({ caseId }: { caseId: string }) {
 
               {/* decision */}
               <section aria-label="Review decision" className="rounded-md border border-border p-4">
-                <h2 className="text-label text-muted-foreground">Review decision</h2>
+                <h2 className="text-label text-muted-foreground">{t("review.decision")}</h2>
                 {!reviewed ? (
                   <>
                     <textarea
                       value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
+                      onChange={(e) => setEditedNotes(e.target.value)}
                       className="mt-2.5 min-h-24 w-full resize-none rounded-sm border border-input bg-background p-2.5 text-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                      aria-label="Review notes"
-                      placeholder="Record the reasoning behind the decision…"
+                      aria-label={t("review.decisionNotes")}
+                      placeholder={t("review.decisionPlaceholder")}
                     />
                     <div className="mt-3 grid grid-cols-1 gap-2">
                       <Button
                         onClick={() =>
                           recordReviewDecision(caseId, {
                             outcome: "approved-for-tps-recalculation",
-                            notes,
+                            notes: notes,
                           })
                         }
                         className="bg-primary text-primary-foreground hover:bg-primary/90"
                       >
-                        <CheckCircle2 className="h-4 w-4" aria-hidden /> Approve for TPS recalculation
+                        <CheckCircle2 className="h-4 w-4" aria-hidden /> {t("review.approveForTps")}
                       </Button>
                       <Button variant="outline" onClick={() => router.push(`/cases/${caseId}/export`)}>
-                        <FileText className="h-4 w-4" aria-hidden /> Continue to export &amp; audit
+                        <FileText className="h-4 w-4" aria-hidden /> {t("review.continueExport")}
                       </Button>
                     </div>
                   </>
@@ -448,10 +453,10 @@ export function ReviewClient({ caseId }: { caseId: string }) {
                     <p className="flex items-center gap-2 text-[13px] text-status-ok">
                       <CheckCircle2 className="h-4 w-4" aria-hidden />
                       {kase.reviewDecision!.outcome === "approved-for-tps-recalculation"
-                        ? "Approved for local TPS recalculation"
-                        : "Revisions requested"}
+                        ? t("review.approvedRecorded")
+                        : t("review.revisionsRecorded")}
                     </p>
-                    <p className="text-xs leading-relaxed text-muted-foreground">{kase.reviewDecision!.notes}</p>
+                    <p className="text-xs leading-relaxed text-muted-foreground">{td(kase.reviewDecision!.notes)}</p>
                     <Button asChild className="w-full">
                       <Link href={`/cases/${caseId}/export`}>Open export &amp; audit →</Link>
                     </Button>
@@ -459,7 +464,7 @@ export function ReviewClient({ caseId }: { caseId: string }) {
                 )}
                 {reviewed && kase.reviewDecision!.outcome !== "approved-for-tps-recalculation" && (
                   <Button variant="ghost" size="sm" className="mt-2 w-full" onClick={() => router.push(`/cases/${caseId}/contours`)}>
-                    <Undo2 className="h-3.5 w-3.5" aria-hidden /> Back to contour review
+                    <Undo2 className="h-3.5 w-3.5" aria-hidden /> {t("review.backToContours")}
                   </Button>
                 )}
               </section>

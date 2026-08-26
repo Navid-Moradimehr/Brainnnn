@@ -18,6 +18,7 @@ import { DnaScrollbar } from "@/components/scrollbar/DnaScrollbar";
 import { getStructureColor } from "@/components/viewer/structureColors";
 import { SafetyGate } from "@/components/primitives/Panel";
 import { useCases } from "@/context/CaseContext";
+import { useI18n } from "@/i18n/I18nProvider";
 import { useViewer, PLANE_TOTAL_SLICES, type Plane } from "@/context/ViewerContext";
 import { cn } from "@/lib/utils";
 
@@ -26,6 +27,7 @@ const PLANES: Plane[] = ["axial", "coronal", "sagittal"];
 export function ContoursClient({ caseId }: { caseId: string }) {
   const router = useRouter();
   const { getCase, approveContours, setActiveCaseId } = useCases();
+  const { t, td } = useI18n();
   const kase = getCase(caseId);
   const viewer = useViewer();
   const {
@@ -41,7 +43,7 @@ export function ContoursClient({ caseId }: { caseId: string }) {
   if (!kase) {
     return (
       <div className="p-10 text-sm text-muted-foreground">
-        Case not found. <Link className="text-status-ok underline" href="/">Back to dashboard</Link>
+        {t("common.caseNotFound")} <Link className="text-status-ok underline" href="/">{t("common.backToDashboard")}</Link>
       </div>
     );
   }
@@ -68,12 +70,12 @@ export function ContoursClient({ caseId }: { caseId: string }) {
                 plane === p ? "bg-accent text-foreground" : "text-muted-foreground hover:text-foreground",
               )}
             >
-              {p}
+              {t(`contours.${p}` as never)}
             </button>
           ))}
         </div>
         {/* raw vs contours */}
-        <div role="tablist" aria-label="Image mode" className="flex rounded-sm border border-border bg-secondary p-0.5">
+        <div role="tablist" aria-label={t("review.comparisonLabel")} className="flex rounded-sm border border-border bg-secondary p-0.5">
           {(["raw", "processed"] as const).map((m) => (
             <button
               key={m}
@@ -85,12 +87,12 @@ export function ContoursClient({ caseId }: { caseId: string }) {
                 imageMode === m ? "bg-accent text-foreground" : "text-muted-foreground hover:text-foreground",
               )}
             >
-              {m === "raw" ? "Raw image" : "Contours"}
+              {m === "raw" ? t("contours.raw") : t("contours.contours")}
             </button>
           ))}
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => stepSlice(-1)} aria-label="Previous slice">
+          <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => stepSlice(-1)} aria-label={t("contours.prevSlice")}>
             −
           </Button>
           <input
@@ -100,9 +102,9 @@ export function ContoursClient({ caseId }: { caseId: string }) {
             value={Math.min(sliceIndex, total - 1)}
             onChange={(e) => setSliceIndex(Number(e.target.value))}
             className="w-52 accent-[#1fc4ae]"
-            aria-label={`Slice position (${sliceIndex + 1}/${total})`}
+            aria-label={`${t("contours.slicePosition")} (${sliceIndex + 1}/${total})`}
           />
-          <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => stepSlice(1)} aria-label="Next slice">
+          <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => stepSlice(1)} aria-label={t("contours.nextSlice")}>
             +
           </Button>
           <span className="num w-16 text-[11px] text-muted-foreground">
@@ -110,20 +112,20 @@ export function ContoursClient({ caseId }: { caseId: string }) {
           </span>
         </div>
         <div className="ml-auto flex gap-2">
-          <Button variant="ghost" size="sm" onClick={() => showAll(allIds)}>Show all</Button>
-          <Button variant="ghost" size="sm" onClick={hideAll}>Hide all</Button>
+          <Button variant="ghost" size="sm" onClick={() => showAll(allIds)}>{t("contours.showAll")}</Button>
+          <Button variant="ghost" size="sm" onClick={hideAll}>{t("contours.hideAll")}</Button>
         </div>
       </div>
 
       {/* main 3-column workspace */}
       <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[240px_1fr_300px]">
         {/* structure list */}
-        <aside aria-label="Structures" className="border-r border-border bg-card/60">
+        <aside aria-label={t("contours.structures")} className="border-r border-border bg-card/60">
           <div className="relative h-full">
             <div ref={listRef} id="contours-list" className="dna-scroll h-full overflow-y-auto">
               <div className="p-3 pr-5">
-                <StructureGroup title="Targets" structures={targets} />
-                <StructureGroup title="Organs at risk" structures={oars} className="mt-5" />
+                <StructureGroup title={t("contours.targets")} structures={targets} />
+                <StructureGroup title={t("contours.oars")} structures={oars} className="mt-5" />
               </div>
             </div>
             <DnaScrollbar target={listRef} controls="contours-list" className="absolute inset-y-0 right-0.5" label="Structure list" />
@@ -131,7 +133,7 @@ export function ContoursClient({ caseId }: { caseId: string }) {
         </aside>
 
         {/* viewport */}
-        <section aria-label="Imaging viewport" className="flex flex-col p-5">
+        <section aria-label={t("contours.contours")} className="flex flex-col p-5">
           <motion.div
             initial={{ opacity: 0, scale: 0.985 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -141,12 +143,12 @@ export function ContoursClient({ caseId }: { caseId: string }) {
             <SliceViewport modality="mr" className="h-full w-full" />
           </motion.div>
           <p className="mt-3 text-center text-xs text-muted-foreground">
-            Simulated T1c MRI · arrow keys scrub slices · click a structure to inspect
+            {t("contours.viewportHint")}
           </p>
         </section>
 
         {/* inspection panel */}
-        <aside aria-label="Inspection" className="border-l border-border bg-card/60">
+        <aside aria-label={t("contours.inspection")} className="border-l border-border bg-card/60">
           <div className="relative h-full">
             <div ref={inspectRef} id="contours-inspect" className="dna-scroll h-full overflow-y-auto">
             <div className="space-y-5 p-4 pr-5">
@@ -165,9 +167,9 @@ export function ContoursClient({ caseId }: { caseId: string }) {
                       {s.name}
                     </h3>
                     <dl className="num mt-3 space-y-2 text-xs text-muted-foreground">
-                      <div className="flex justify-between"><dt>Volume</dt><dd>{s.volumeCc.toFixed(1)} cm³</dd></div>
-                      <div className="flex justify-between"><dt>Completeness</dt><dd className={s.completenessPct < 100 ? "text-status-warn" : ""}>{s.completenessPct}%</dd></div>
-                      <div className="flex justify-between"><dt>Approval</dt><dd>{s.approvedBy ?? "pending"}</dd></div>
+                      <div className="flex justify-between"><dt>{t("contours.volume")}</dt><dd>{s.volumeCc.toFixed(1)} cm³</dd></div>
+                      <div className="flex justify-between"><dt>{t("contours.completeness")}</dt><dd className={s.completenessPct < 100 ? "text-status-warn" : ""}>{s.completenessPct}%</dd></div>
+                      <div className="flex justify-between"><dt>{t("contours.approval")}</dt><dd>{s.approvedBy ?? t("contours.pending")}</dd></div>
                     </dl>
                     <div className="mt-3 h-1 overflow-hidden rounded bg-secondary">
                       <div className="h-full rounded" style={{ width: `${s.completenessPct}%`, background: color }} />
@@ -181,22 +183,22 @@ export function ContoursClient({ caseId }: { caseId: string }) {
                 <div className="rounded-md border border-dashed border-border p-4 text-center">
                   <ShieldQuestion className="mx-auto h-5 w-5 text-muted-foreground" aria-hidden />
                   <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                    Select a structure in the list or viewer to inspect contour completeness.
+                    {t("contours.selectPrompt")}
                   </p>
                 </div>
               )}
 
               <div className="rounded-md border border-border bg-secondary/60 p-4">
-                <h3 className="text-label text-muted-foreground">Review notes</h3>
+                <h3 className="text-label text-muted-foreground">{t("contours.reviewNotes")}</h3>
                 <textarea
                   className="mt-2.5 min-h-24 w-full resize-none rounded-sm border border-input bg-background p-2.5 text-xs placeholder:text-muted-foreground/60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                  placeholder="Findings for this structure set…"
+                  placeholder={t("contours.notesPlaceholder")}
                   defaultValue={
                     kase.registrationWarnings.length
-                      ? "Hold approval until registration QC passes."
-                      : "Target volumes consistent with diagnostic MRI. Expansion margins reviewed."
+                      ? t("contours.notesDefaultHeld")
+                      : t("contours.notesDefaultOk")
                   }
-                  aria-label="Review notes"
+                  aria-label={t("contours.reviewNotes")}
                 />
               </div>
 
@@ -205,14 +207,14 @@ export function ContoursClient({ caseId }: { caseId: string }) {
                   <>
                     <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
                     <div className="text-[13px] leading-snug">
-                      Clinician-approved contours on file — dose generation unlocked.
+                      {t("contours.gateApproved")}
                     </div>
                   </>
                 ) : (
                   <>
                     <Lock className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
                     <div className="text-[13px] leading-snug">
-                      Clinician-approved contours required before dose generation can start.
+                      {t("contours.gateBlocked")}
                     </div>
                   </>
                 )}
@@ -223,7 +225,7 @@ export function ContoursClient({ caseId }: { caseId: string }) {
                   className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
                   onClick={() => approveContours(caseId)}
                 >
-                  <CheckCircle2 className="h-4 w-4" aria-hidden /> Approve contours as clinician (mock)
+                  <CheckCircle2 className="h-4 w-4" aria-hidden /> {t("contours.approveBtn")}
                 </Button>
               )}
               {approved && (
@@ -231,7 +233,7 @@ export function ContoursClient({ caseId }: { caseId: string }) {
                   className="w-full"
                   onClick={() => router.push(`/cases/${caseId}/intent`)}
                 >
-                  Continue to plan intent →
+                  {t("contours.continueBtn")}
                 </Button>
               )}
             </div>
@@ -275,11 +277,11 @@ export function ContoursClient({ caseId }: { caseId: string }) {
                   <Switch
                     checked={visible}
                     onCheckedChange={() => toggleVisible(s.id)}
-                    aria-label={`Toggle ${s.name} visibility`}
+                    aria-label={`${t("contours.toggleVisibility")}: ${td(s.name)}`}
                     className="scale-[0.85]"
                   />
                   <span aria-hidden className="h-2 w-2 shrink-0 rounded-full" style={{ background: getStructureColor(s.id), opacity: visible ? 1 : 0.35 }} />
-                  <span className={cn("truncate text-[13px]", !visible && "text-muted-foreground")}>{s.name}</span>
+                  <span className={cn("truncate text-[13px]", !visible && "text-muted-foreground")}>{td(s.name)}</span>
                   <span className="num ml-auto text-[10px] text-muted-foreground">{s.shortLabel}</span>
                   {visible ? (
                     <Eye className="h-3 w-3 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" aria-hidden />

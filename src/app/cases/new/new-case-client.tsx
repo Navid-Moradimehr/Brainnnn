@@ -19,29 +19,31 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { ProtocolTag } from "@/components/primitives/StatusBadge";
 import { useCases } from "@/context/CaseContext";
+import { useI18n, type TranslationKey } from "@/i18n/I18nProvider";
 import type { Modality } from "@/types";
 
 type SeriesState = "idle" | "receiving" | "received" | "checked";
 
 interface Slot {
   id: string;
-  title: string;
-  desc: string;
+  titleKey: TranslationKey;
+  descKey: TranslationKey;
   icon: typeof FileUp;
   required: boolean;
   modality?: Modality;
 }
 
 const SLOTS: Slot[] = [
-  { id: "ct", title: "Planning CT", desc: "RTIMAGE · head fixation, thin slices preferred", icon: ScanLine, required: true, modality: "CT" },
-  { id: "mr", title: "T1c MRI", desc: "Registered or registration-ready series", icon: Layers, required: true, modality: "MR" },
-  { id: "rtstruct", title: "RTSTRUCT — approved contours", desc: "Clinician-approved target and OAR set", icon: Boxes, required: true },
-  { id: "rtdose", title: "Reference RTDOSE", desc: "Optional — existing plan dose for side-by-side review", icon: FileUp, required: false },
+  { id: "ct", titleKey: "import.planningCT", descKey: "import.planningCTDesc", icon: ScanLine, required: true, modality: "CT" },
+  { id: "mr", titleKey: "import.mr", descKey: "import.mrDesc", icon: Layers, required: true, modality: "MR" },
+  { id: "rtstruct", titleKey: "import.rtstruct", descKey: "import.rtstructDesc", icon: Boxes, required: true },
+  { id: "rtdose", titleKey: "import.rtdose", descKey: "import.rtdoseDesc", icon: FileUp, required: false },
 ];
 
 export function NewCaseClient() {
   const router = useRouter();
   const { createCase } = useCases();
+  const { t } = useI18n();
   const [slots, setSlots] = useState<Record<string, SeriesState>>({ ct: "idle", mr: "idle", rtstruct: "idle", rtdose: "idle" });
   const [missingOar, setMissingOar] = useState(false);
   const [noticeAck, setNoticeAck] = useState(false);
@@ -64,15 +66,15 @@ export function NewCaseClient() {
   const checklist: Array<{ ok: boolean; warn?: boolean; label: string }> = useMemo(() => {
     if (!anyReceived) return [];
     return [
-      { ok: slots.ct === "checked", label: "Planning CT received — 148 slices, 1.5 mm" },
-      { ok: slots.mr === "checked", label: "T1c MRI detected — 176 slices, 1.0 mm" },
-      { ok: slots.rtstruct === "checked", label: "RTSTRUCT detected — 12 structure ROIs read" },
-      { ok: slots.rtstruct === "checked", label: "Required target structures found — GTV, CTV, PTV" },
+      { ok: slots.ct === "checked", label: t("import.ctReceived") },
+      { ok: slots.mr === "checked", label: t("import.mrDetected") },
+      { ok: slots.rtstruct === "checked", label: t("import.structDetected") },
+      { ok: slots.rtstruct === "checked", label: t("import.targetsFound") },
       missingOar
-        ? { ok: false, warn: true, label: "Missing OAR warning — optic chiasm contour incomplete (review-band)" }
-        : { ok: slots.rtstruct === "checked", label: "Required OARs present — brainstem, optic apparatus, lenses" },
+        ? { ok: false, warn: true, label: t("import.oarMissing") }
+        : { ok: slots.rtstruct === "checked", label: t("import.oarsPresent") },
     ];
-  }, [slots, missingOar, anyReceived]);
+  }, [slots, missingOar, anyReceived, t]);
 
   function handleCreate() {
     setCreating(true);
@@ -88,9 +90,9 @@ export function NewCaseClient() {
       <div className="mx-auto max-w-4xl px-6 py-8">
         <header className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="text-xl font-semibold tracking-tight">New case — import</h1>
+            <h1 className="text-xl font-semibold tracking-tight">{t("import.title")}</h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Synthetic case label will be assigned on creation · no patient identifiers
+              {t("import.subtitle")}
             </p>
           </div>
           <ProtocolTag />
@@ -107,7 +109,7 @@ export function NewCaseClient() {
                 type="button"
                 disabled={st !== "idle"}
                 onClick={() => receive(s.id)}
-                aria-label={`Import ${s.title}`}
+                aria-label={`${t("import.title")} — ${t(s.titleKey)}`}
                 className={
                   "group relative flex flex-col items-start gap-3 rounded-md border border-dashed p-5 text-left transition-colors " +
                   (st === "idle"
@@ -119,14 +121,14 @@ export function NewCaseClient() {
               >
                 <span className="flex w-full items-center justify-between">
                   <Icon className="h-5 w-5 text-muted-foreground" aria-hidden />
-                  {st === "idle" && <span className="text-label text-muted-foreground">Select files</span>}
+                  {st === "idle" && <span className="text-label text-muted-foreground">{t("import.selectFiles")}</span>}
                   {st === "receiving" && <Loader2 className="h-4 w-4 animate-spin text-status-info" aria-hidden />}
                   {(st === "received" || st === "checked") && <CheckCircle2 className="h-4 w-4 text-status-ok" aria-hidden />}
                 </span>
-                <span className="text-sm font-medium">{s.title}{!s.required && <span className="ml-1.5 text-muted-foreground">· optional</span>}</span>
-                <span className="text-xs leading-relaxed text-muted-foreground">{s.desc}</span>
+                <span className="text-sm font-medium">{t(s.titleKey)}{!s.required && <span className="ms-1.5 text-muted-foreground">· {t("common.optional")}</span>}</span>
+                <span className="text-xs leading-relaxed text-muted-foreground">{t(s.descKey)}</span>
                 {st === "received" && (
-                  <span className="num text-[11px] text-status-info">Checking series integrity…</span>
+                  <span className="num text-[11px] text-status-info">{t("import.checking")}</span>
                 )}
               </button>
             );
@@ -141,10 +143,10 @@ export function NewCaseClient() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.28 }}
-              aria-label="Import validation"
+              aria-label={t("import.validationTitle")}
               className="mt-7 rounded-md border border-border bg-card p-5"
             >
-              <h2 className="text-label text-muted-foreground">Import validation</h2>
+              <h2 className="text-label text-muted-foreground">{t("import.validationTitle")}</h2>
               <ul className="mt-3 space-y-2.5">
                 {checklist.map((item) => (
                   <li key={item.label} className="flex items-center gap-2.5 text-sm">
@@ -170,7 +172,7 @@ export function NewCaseClient() {
                   onChange={(e) => setMissingOar(e.target.checked)}
                   className="accent-[#e2a33e]"
                 />
-                Simulate missing OAR contour scenario
+                {t("import.simulateMissing")}
               </label>
             </motion.section>
           )}
@@ -179,7 +181,7 @@ export function NewCaseClient() {
         {/* protocol + de-id notice */}
         <section aria-label="Protocol and research notice" className="mt-7 grid grid-cols-1 gap-4 lg:grid-cols-[1fr_320px]">
           <div className="rounded-md border border-border bg-card p-5">
-            <h2 className="text-label text-muted-foreground">Protocol selection</h2>
+            <h2 className="text-label text-muted-foreground">{t("import.protocolTitle")}</h2>
             <RadioGroup defaultValue="gbm60" className="mt-3 gap-3">
               <Label
                 htmlFor="proto-gbm60"
@@ -187,9 +189,9 @@ export function NewCaseClient() {
               >
                 <RadioGroupItem id="proto-gbm60" value="gbm60" className="mt-0.5" />
                 <span>
-                  <span className="block text-sm font-medium">GBM · 60 Gy / 30 fx</span>
+                  <span className="block text-sm font-medium">{t("import.protocolGbm")}</span>
                   <span className="mt-0.5 block text-xs text-muted-foreground">
-                    VMAT · adult glioblastoma · the only protocol in this MVP
+                    {t("import.protocolGbmSub")}
                   </span>
                 </span>
               </Label>
@@ -199,9 +201,9 @@ export function NewCaseClient() {
               >
                 <RadioGroupItem id="proto-none" value="other" disabled className="mt-0.5" />
                 <span>
-                  <span className="block text-sm font-medium">Other protocols</span>
+                  <span className="block text-sm font-medium">{t("import.protocolOther")}</span>
                   <span className="mt-0.5 block text-xs text-muted-foreground">
-                    Not available — separate protocols are introduced only with suitable data
+                    {t("import.protocolOtherSub")}
                   </span>
                 </span>
               </Label>
@@ -210,15 +212,14 @@ export function NewCaseClient() {
 
           <div className="rounded-md border border-border bg-secondary p-5">
             <h2 className="text-label flex items-center gap-2 text-muted-foreground">
-              <ShieldCheck className="h-3.5 w-3.5" aria-hidden /> Research use notice
+              <ShieldCheck className="h-3.5 w-3.5" aria-hidden /> {t("import.noticeTitle")}
             </h2>
             <p className="mt-2.5 text-xs leading-relaxed text-muted-foreground">
-              Data must be de-identified before upload. Meridian is a research prototype:
-              outputs are candidate forecasts for review, never deliverable plans.
+              {t("import.noticeBody")}
             </p>
             <label className="mt-3 flex items-center gap-2 text-xs text-foreground">
               <input type="checkbox" checked={noticeAck} onChange={(e) => setNoticeAck(e.target.checked)} />
-              I confirm the data is de-identified for research use
+              {t("import.noticeAck")}
             </label>
           </div>
         </section>
@@ -232,7 +233,7 @@ export function NewCaseClient() {
             className="gap-2"
           >
             {creating ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
-            Create case and continue to validation
+            {t("import.createBtn")}
             <ArrowRight className="h-4 w-4" aria-hidden />
           </Button>
         </div>

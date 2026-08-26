@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
+import { IBM_Plex_Mono, IBM_Plex_Sans, Vazirmatn } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/context/Providers";
 import { AppShell } from "@/components/shell/AppShell";
@@ -17,6 +17,12 @@ const plexMono = IBM_Plex_Mono({
   weight: ["400", "500", "600"],
 });
 
+const vazir = Vazirmatn({
+  variable: "--font-vazir",
+  subsets: ["arabic", "latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
 export const metadata: Metadata = {
   title: {
     default: "Meridian — RT Planning Research Workspace",
@@ -31,7 +37,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${plexSans.variable} ${plexMono.variable} h-full antialiased`}
+      className={`${plexSans.variable} ${plexMono.variable} ${vazir.variable} h-full antialiased`}
     >
       <body className="flex h-full min-h-full flex-col">
         <Providers>

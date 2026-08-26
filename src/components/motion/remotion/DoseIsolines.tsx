@@ -41,7 +41,7 @@ function blobPath(cx: number, cy: number, r: number, seed: number, t: number): s
   return d + "Z";
 }
 
-export function DoseIsolines() {
+export function DoseIsolines({ tag }: { tag?: string }) {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
   const progress = interpolate(frame, [0, durationInFrames], [0, 1], {
@@ -96,7 +96,7 @@ export function DoseIsolines() {
         />
 
         <text x="12" y="188" fill="#8b94a7" fontSize="9" fontFamily="monospace">
-          RESEARCH CANDIDATE · ACHIEVABLE DOSE FORECAST
+          {tag ?? "RESEARCH CANDIDATE · ACHIEVABLE DOSE FORECAST"}
         </text>
       </svg>
     </AbsoluteFill>

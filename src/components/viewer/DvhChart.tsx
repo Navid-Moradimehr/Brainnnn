@@ -10,6 +10,7 @@ import {
   Tooltip,
 } from "recharts";
 import { getStructureColor } from "./structureColors";
+import { useI18n } from "@/i18n/I18nProvider";
 import type { CandidatePlan } from "@/types";
 
 interface Props {
@@ -23,6 +24,7 @@ interface Props {
 const REFERENCE_IDS = new Set(["gtv", "ctv", "ptv", "brainstem", "chiasm", "nerve-l"]);
 
 export function DvhChart({ plan, reference, visibleIds, selectedId, onSelect }: Props) {
+  const { t } = useI18n();
   const candidateCurves = plan.dvh.filter((c) => visibleIds.has(c.structureId));
   const refCurves =
     reference?.dvh.filter((c) => REFERENCE_IDS.has(c.structureId)) ?? [];
@@ -40,7 +42,7 @@ export function DvhChart({ plan, reference, visibleIds, selectedId, onSelect }: 
             tick={{ fill: "#8b94a7", fontSize: 10, fontFamily: "var(--font-plex-mono)" }}
             stroke="#2a3444"
             label={{
-              value: "Dose (Gy)",
+              value: t("viewer.doseAxis"),
               position: "insideBottomRight",
               offset: -2,
               fill: "#8b94a7",
@@ -104,8 +106,8 @@ export function DvhChart({ plan, reference, visibleIds, selectedId, onSelect }: 
         </LineChart>
       </ResponsiveContainer>
       {reference && (
-        <p className="mt-1 text-right text-[10px] text-muted-foreground">
-          dashed = reference plan · solid = candidate forecast · click a curve to inspect
+        <p className="mt-1 text-end text-[10px] text-muted-foreground">
+          {t("review.dvhHint")}
         </p>
       )}
     </div>

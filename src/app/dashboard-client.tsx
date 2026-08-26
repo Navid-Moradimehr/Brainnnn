@@ -21,6 +21,7 @@ import {
 import { StatusBadge, ProtocolTag } from "@/components/primitives/StatusBadge";
 import { MetricTile } from "@/components/primitives/Panel";
 import { useCases } from "@/context/CaseContext";
+import { useI18n } from "@/i18n/I18nProvider";
 
 const fade = {
   hidden: { opacity: 0, y: 8 },
@@ -33,6 +34,7 @@ const fade = {
 
 export function DashboardClient() {
   const { cases } = useCases();
+  const { t, td, locale } = useI18n();
   const inReview = cases.filter(
     (c) => c.status === "review-required" || c.status === "data-review",
   ).length;
@@ -49,16 +51,16 @@ export function DashboardClient() {
         <motion.div variants={fade} initial="hidden" animate="show" custom={0}>
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <h1 className="text-xl font-semibold tracking-tight">Case workspace</h1>
+              <h1 className="text-xl font-semibold tracking-tight">{t("dashboard.title")}</h1>
               <p className="mt-1 text-sm text-muted-foreground">
-                Research planning review for adult glioblastoma · single protocol
+                {t("dashboard.subtitle")}
               </p>
             </div>
             <div className="flex items-center gap-2">
               <ProtocolTag />
               <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
                 <Link href="/cases/new">
-                  <Plus className="h-4 w-4" aria-hidden /> Create new case
+                  <Plus className="h-4 w-4" aria-hidden /> {t("dashboard.createCase")}
                 </Link>
               </Button>
             </div>
@@ -69,35 +71,35 @@ export function DashboardClient() {
         <div className="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <motion.div variants={fade} initial="hidden" animate="show" custom={1}>
             <MetricTile
-              label="Cases in review"
+              label={t("dashboard.inReview")}
               value={String(inReview)}
-              sub="Awaiting clinician or physics action"
+              sub={t("dashboard.inReviewSub")}
               tone={inReview > 0 ? "warn" : "default"}
               icon={<FolderOpen className="h-4 w-4" aria-hidden />}
             />
           </motion.div>
           <motion.div variants={fade} initial="hidden" animate="show" custom={2}>
             <MetricTile
-              label="Planning time saved*"
+              label={t("dashboard.saved")}
               value="3.4 h"
-              sub="Median per candidate, last 30 days"
+              sub={t("dashboard.savedSub")}
               icon={<TimerReset className="h-4 w-4" aria-hidden />}
             />
           </motion.div>
           <motion.div variants={fade} initial="hidden" animate="show" custom={3}>
             <MetricTile
-              label="Flagged constraints"
+              label={t("dashboard.flagged")}
               value={String(flagged)}
-              sub="In review band — none blocked"
+              sub={t("dashboard.flaggedSub")}
               tone={flagged > 0 ? "warn" : "ok"}
               icon={<ShieldAlert className="h-4 w-4" aria-hidden />}
             />
           </motion.div>
           <motion.div variants={fade} initial="hidden" animate="show" custom={4}>
             <MetricTile
-              label="Active protocol"
+              label={t("dashboard.activeProtocol")}
               value="60 Gy / 30 fx"
-              sub="VMAT · GBM adults only"
+              sub={t("dashboard.activeProtocolSub")}
               icon={<FileClock className="h-4 w-4" aria-hidden />}
             />
           </motion.div>
@@ -114,16 +116,16 @@ export function DashboardClient() {
           >
             <div className="mb-3 flex items-center justify-between">
               <h2 id="recent-cases-h" className="text-label text-muted-foreground">
-                Recent cases
+                {t("dashboard.recentCases")}
               </h2>
               <Select defaultValue="gbm60">
-                <SelectTrigger size="sm" className="w-[190px]" aria-label="Filter by protocol">
+                <SelectTrigger size="sm" className="w-[190px]" aria-label={t("protocol.filterLabel")}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="gbm60">GBM · 60 Gy / 30 fx</SelectItem>
+                  <SelectItem value="gbm60">{t("protocol.filter")}</SelectItem>
                   <SelectItem value="all" disabled>
-                    All protocols (MVP: one)
+                    {t("protocol.filterAll")}
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -137,7 +139,7 @@ export function DashboardClient() {
                   >
                     <span className="num w-[86px] text-sm font-medium">{c.id}</span>
                     <span className="min-w-0 flex-1 truncate text-sm text-muted-foreground">
-                      {c.diagnosis}
+                      {td(c.diagnosis)}
                     </span>
                     <StatusBadge status={c.status} />
                     <ArrowRight
@@ -149,7 +151,7 @@ export function DashboardClient() {
               ))}
             </ul>
             <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-              *Simulated metric for prototype purposes only.
+              {t("dashboard.simulatedNote")}
             </p>
           </motion.section>
 
@@ -162,7 +164,7 @@ export function DashboardClient() {
             aria-labelledby="activity-h"
           >
             <h2 id="activity-h" className="text-label mb-3 text-muted-foreground">
-              Activity
+              {t("dashboard.activity")}
             </h2>
             <ol className="relative space-y-5 rounded-md border border-border bg-card p-5">
               {cases.flatMap((c) =>
@@ -186,9 +188,9 @@ export function DashboardClient() {
                             : "border-border bg-muted-foreground")
                       }
                     />
-                    <p className="text-[13px] leading-snug text-foreground/90">{e.action}</p>
+                    <p className="text-[13px] leading-snug text-foreground/90">{td(e.action)}</p>
                     <p className="num mt-1 text-[11px] text-muted-foreground">
-                      {c.id} · {formatWhen(e.timestamp)}
+                      {c.id} · {formatWhen(e.timestamp, locale)}
                     </p>
                   </li>
                 ))}
@@ -200,9 +202,9 @@ export function DashboardClient() {
   );
 }
 
-function formatWhen(iso: string): string {
+function formatWhen(iso: string, locale: "en" | "fa"): string {
   const d = new Date(iso);
-  return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short" }) +
-    " " +
-    d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+  const date = d.toLocaleDateString(locale === "fa" ? "fa-IR" : "en-GB", { day: "2-digit", month: "short" });
+  const time = d.toLocaleTimeString(locale === "fa" ? "fa-IR" : "en-GB", { hour: "2-digit", minute: "2-digit" });
+  return `${date} ${time}`;
 }

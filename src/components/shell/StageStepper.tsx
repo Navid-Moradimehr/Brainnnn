@@ -4,10 +4,11 @@ import Link from "next/link";
 import { Check, Lock, AlertTriangle, Circle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Case } from "@/types";
-import { STAGE_LABELS } from "@/types";
+import { useI18n, type TranslationKey } from "@/i18n/I18nProvider";
 import { getStageStates } from "@/lib/workflow";
 
 export function StageStepper({ kase }: { kase: Case }) {
+  const { t } = useI18n();
   const states = getStageStates(kase);
   return (
     <nav aria-label="Workflow stages" className="flex items-center gap-1 overflow-x-auto scrollbar-thin">
@@ -23,7 +24,7 @@ export function StageStepper({ kase }: { kase: Case }) {
               aria-disabled={!clickable}
               onClick={(e) => !clickable && e.preventDefault()}
               className={cn(
-                "group flex items-center gap-1.5 rounded-sm px-2 py-1 text-[11px] font-medium tracking-wide whitespace-nowrap",
+                "group flex items-center gap-1.5 rounded-sm px-2 py-1 text-[11px] font-medium whitespace-nowrap",
                 s.current
                   ? s.flagged
                     ? "bg-warn-soft text-status-warn"
@@ -44,7 +45,7 @@ export function StageStepper({ kase }: { kase: Case }) {
               ) : (
                 <Lock className="h-3 w-3" aria-hidden />
               )}
-              {STAGE_LABELS[s.stage]}
+              {t(`stages.${s.stage}` as TranslationKey)}
             </Link>
           </div>
         );

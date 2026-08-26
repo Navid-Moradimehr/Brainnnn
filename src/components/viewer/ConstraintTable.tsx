@@ -2,6 +2,7 @@
 
 import { ArrowUpRight, Link2 } from "lucide-react";
 import { VerdictBadge } from "@/components/primitives/VerdictBadge";
+import { useI18n } from "@/i18n/I18nProvider";
 import type { CandidatePlan } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -13,13 +14,14 @@ interface Props {
 }
 
 export function ConstraintTable({ plan, selectedId, onSelectStructureName, highlightDefId }: Props) {
+  const { t, td } = useI18n();
   return (
     <div role="table" aria-label="Protocol constraint evaluation" className="overflow-hidden rounded-md border border-border">
       <div role="row" className="grid grid-cols-[1.5fr_1fr_0.9fr_auto] gap-3 border-b border-border bg-secondary/70 px-3 py-2 text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
-        <span role="columnheader">Constraint</span>
-        <span role="columnheader" className="text-right">Candidate</span>
-        <span role="columnheader" className="text-right">Objective</span>
-        <span role="columnheader" className="w-20 text-right">Verdict</span>
+        <span role="columnheader">{t("review.colConstraint")}</span>
+        <span role="columnheader" className="text-end">{t("review.colCandidate")}</span>
+        <span role="columnheader" className="text-end">{t("review.colObjective")}</span>
+        <span role="columnheader" className="w-20 text-end">{t("review.colVerdict")}</span>
       </div>
       <ul>
         {plan.constraints.map((c) => {
@@ -33,14 +35,14 @@ export function ConstraintTable({ plan, selectedId, onSelectStructureName, highl
               <button
                 onClick={() => onSelectStructureName(c.structureName)}
                 className={cn(
-                  "grid w-full grid-cols-[1.5fr_1fr_0.9fr_auto] items-center gap-3 border-b border-border/70 px-3 py-2.5 text-left transition-colors last:border-b-0",
+                  "grid w-full grid-cols-[1.5fr_1fr_0.9fr_auto] items-center gap-3 border-b border-border/70 px-3 py-2.5 text-start transition-colors last:border-b-0",
                   highlighted ? "bg-warn-soft/70" : selected ? "bg-accent" : "hover:bg-accent/60",
                   c.verdict === "blocked" && "bg-danger-soft",
                 )}
-                aria-label={`${c.structureName} ${c.metric}: candidate ${fmt(c.candidateValueGy)} versus objective ${c.objective}. Verdict ${c.verdict}`}
+                aria-label={`${td(c.structureName)} ${c.metric}: ${t("review.colCandidate")} ${fmt(c.candidateValueGy)} — ${c.objective}. ${t(`verdict.${c.verdict}` as never)}`}
               >
                 <span role="cell" className="min-w-0">
-                  <span className="block truncate text-[13px] font-medium">{c.structureName}</span>
+                  <span className="block truncate text-[13px] font-medium">{td(c.structureName)}</span>
                   <span className="text-[11px] text-muted-foreground">{c.metric}</span>
                   {c.relatesTo && (
                     <Link2
@@ -49,7 +51,7 @@ export function ConstraintTable({ plan, selectedId, onSelectStructureName, highl
                     />
                   )}
                 </span>
-                <span role="cell" className="num text-right text-[13px]">
+                <span role="cell" className="num text-end text-[13px]">
                   {fmt(c.candidateValueGy)}
                   {delta !== undefined && Math.abs(delta) >= 0.05 && (
                     <span
@@ -65,7 +67,7 @@ export function ConstraintTable({ plan, selectedId, onSelectStructureName, highl
                     </span>
                   )}
                 </span>
-                <span role="cell" className="num text-right text-xs text-muted-foreground">{c.objective}</span>
+                <span role="cell" className="num text-end text-xs text-muted-foreground">{c.objective}</span>
                 <span role="cell" className="flex justify-end"><VerdictBadge verdict={c.verdict} /></span>
               </button>
               {(highlighted || selected) && c.rationale && (

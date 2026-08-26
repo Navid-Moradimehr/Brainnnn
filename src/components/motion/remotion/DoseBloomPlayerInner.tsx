@@ -3,10 +3,12 @@
 import { Player } from "@remotion/player";
 import { DoseIsolines } from "./DoseIsolines";
 import { useReducedMotion } from "framer-motion";
+import { useI18n } from "@/i18n/I18nProvider";
 
 /** Inner player — loaded via next/dynamic from DoseBloomPlayer. */
 export function DoseBloomPlayerInner({ className }: { className?: string }) {
   const reduce = useReducedMotion();
+  const { t } = useI18n();
   return (
     <div
       role="img"
@@ -19,7 +21,7 @@ export function DoseBloomPlayerInner({ className }: { className?: string }) {
         compositionWidth={640}
         compositionHeight={400}
         fps={30}
-        inputProps={{}}
+        inputProps={{ tag: t("generate.forecastTag") }}
         style={{ width: "100%", height: "100%" }}
         autoPlay={!reduce}
         loop={!reduce}

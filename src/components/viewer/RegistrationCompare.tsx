@@ -3,19 +3,21 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { AnatomySvg } from "./AnatomySvg";
+import { useI18n } from "@/i18n/I18nProvider";
 
 /**
  * Registration QC control: side-by-side or blended overlay of CT and MR
  * with a slider wipe. Purely visual — the "confidence" figure is mock data.
  */
 export function RegistrationCompare({ sliceIndex = 48 }: { sliceIndex?: number }) {
+  const { t } = useI18n();
   const [mode, setMode] = useState<"overlay" | "side">("overlay");
   const [wipe, setWipe] = useState(52);
 
   return (
     <div>
       <div className="mb-3 flex items-center justify-between">
-        <div role="tablist" aria-label="Comparison mode" className="flex rounded-sm border border-border bg-secondary p-0.5">
+        <div role="tablist" aria-label={t("validation.comparison")} className="flex rounded-sm border border-border bg-secondary p-0.5">
           {(["overlay", "side"] as const).map((m) => (
             <button
               key={m}
@@ -27,7 +29,7 @@ export function RegistrationCompare({ sliceIndex = 48 }: { sliceIndex?: number }
                 (mode === m ? "bg-accent text-foreground" : "text-muted-foreground hover:text-foreground")
               }
             >
-              {m}
+              {t(`validation.${m}` as never)}
             </button>
           ))}
         </div>
@@ -54,7 +56,7 @@ export function RegistrationCompare({ sliceIndex = 48 }: { sliceIndex?: number }
             <span className="absolute right-2 top-2 rounded-sm bg-black/55 px-1.5 py-0.5 font-mono text-[10px] tracking-wide text-foreground/85">CT</span>
           </div>
           <label className="mt-3 block">
-            <span className="sr-only">Overlay wipe position</span>
+            <span className="sr-only">{t("validation.wipePosition")}</span>
             <input
               type="range"
               min={0}

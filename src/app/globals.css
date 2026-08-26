@@ -309,3 +309,15 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ── Persian (RTL) adjustments ───────────────────────────────
+   Letter-spacing breaks the joined Persian script; Vazirmatn is
+   swapped in at runtime via the --font-plex-sans variable. */
+html[lang="fa"] .text-label,
+html[lang="fa"] [class*="tracking-"] {
+  letter-spacing: normal !important;
+}
+
+html[lang="fa"] .num {
+  font-family: var(--font-plex-mono), var(--font-vazir), monospace;
+}

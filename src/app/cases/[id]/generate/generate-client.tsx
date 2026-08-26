@@ -8,6 +8,7 @@ import { CheckCircle2, CircleDashed, Loader2, TriangleAlert } from "lucide-react
 import { Button } from "@/components/ui/button";
 import { DoseBloomPlayer } from "@/components/motion/remotion/DoseBloomPlayer";
 import { useCases } from "@/context/CaseContext";
+import { useI18n } from "@/i18n/I18nProvider";
 import { GENERATION_STAGES } from "@/lib/mock/jobs";
 import { cn } from "@/lib/utils";
 import type { JobStage, JobStageState } from "@/types";
@@ -16,6 +17,7 @@ export function GenerateClient({ caseId }: { caseId: string }) {
   const router = useRouter();
   const reduce = useReducedMotion();
   const { getCase, beginGeneration, completeGeneration, setActiveCaseId } = useCases();
+  const { t } = useI18n();
   const kase = getCase(caseId);
   const [stages, setStages] = useState<JobStage[]>(
     GENERATION_STAGES.map((s) => ({ ...s, state: "pending" as JobStageState })),
@@ -70,11 +72,11 @@ export function GenerateClient({ caseId }: { caseId: string }) {
       <div className="mx-auto max-w-5xl px-6 py-8">
         <header className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-label text-muted-foreground">Candidate generation</p>
+            <p className="text-label text-muted-foreground">{t("generate.title")}</p>
             <h1 className="num mt-1 text-xl font-semibold tracking-tight">{kase.id}</h1>
           </div>
           <span className="rounded-sm border border-info/30 bg-info-soft px-2.5 py-1 text-xs font-medium text-status-info">
-            Research candidate dose forecast
+            {t("generate.badge")}
           </span>
         </header>
 
@@ -82,10 +84,10 @@ export function GenerateClient({ caseId }: { caseId: string }) {
           <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-md border border-danger/40 bg-danger-soft px-4 py-3" role="alert">
             <p className="flex items-center gap-2.5 text-sm text-status-danger">
               <TriangleAlert className="h-4 w-4" aria-hidden />
-              Generation is gated: clinician-approved contours and confirmed plan intent are required.
+              {t("generate.gated")}
             </p>
             <Button variant="outline" size="sm" asChild>
-              <Link href={`/cases/${caseId}/contours`}>Open contour review</Link>
+              <Link href={`/cases/${caseId}/contours`}>{t("generate.openContours")}</Link>
             </Button>
           </div>
         )}
@@ -95,8 +97,8 @@ export function GenerateClient({ caseId }: { caseId: string }) {
             {/* stages */}
             <section aria-label="Job progress" className="rounded-md border border-border bg-card p-6">
               <div className="mb-5 flex items-center justify-between gap-4">
-                <h2 className="text-label text-muted-foreground">Job stages</h2>
-                <span className="num text-xs text-muted-foreground">{done ? "complete" : running ? `${progress}%` : `${progress}%`}</span>
+                <h2 className="text-label text-muted-foreground">{t("generate.jobStages")}</h2>
+                <span className="num text-xs text-muted-foreground">{done ? t("generate.complete") : `${progress}%`}</span>
               </div>
               <div className="mb-6 h-1 overflow-hidden rounded-full bg-secondary">
                 <motion.div
@@ -132,7 +134,7 @@ export function GenerateClient({ caseId }: { caseId: string }) {
                     </span>
                     <div className="min-w-0">
                       <p className={cn("text-sm", s.state === "pending" ? "text-muted-foreground" : "font-medium")}>
-                        {s.label}
+                        {t(`generate.stages.${s.id}.label` as never)}
                       </p>
                       <AnimatePresence>
                         {(s.state === "active" || s.state === "done") && s.detail && (
@@ -142,7 +144,7 @@ export function GenerateClient({ caseId }: { caseId: string }) {
                             exit={{ opacity: 0 }}
                             className="mt-0.5 overflow-hidden text-xs leading-relaxed text-muted-foreground"
                           >
-                            {s.detail}
+                            {t(`generate.stages.${s.id}.detail` as never)}
                           </motion.p>
                         )}
                       </AnimatePresence>
@@ -154,26 +156,26 @@ export function GenerateClient({ caseId }: { caseId: string }) {
               <div className="mt-8 border-t border-border pt-5">
                 {!running && !done && !alreadyHasPlan && (
                   <Button size="lg" onClick={start} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
-                    Start candidate generation
+                    {t("generate.startBtn")}
                   </Button>
                 )}
                 {running && (
                   <p className="flex items-center gap-2 text-sm text-status-info">
-                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> Running — this is a simulated job for prototype purposes.
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> {t("generate.running")}
                   </p>
                 )}
                 {done && (
                   <Button size="lg" onClick={() => router.push(`/cases/${caseId}/review`)} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
-                    Open review workspace →
+                    {t("generate.openReview")}
                   </Button>
                 )}
                 {alreadyHasPlan && !running && (
                   <div className="space-y-3">
                     <p className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <CheckCircle2 className="h-4 w-4 text-status-ok" aria-hidden /> Candidate already generated for this case.
+                      <CheckCircle2 className="h-4 w-4 text-status-ok" aria-hidden /> {t("generate.alreadyDone")}
                     </p>
                     <Button size="lg" onClick={() => router.push(`/cases/${caseId}/review`)} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
-                      Open review workspace →
+                      {t("generate.openReview")}
                     </Button>
                   </div>
                 )}
@@ -185,11 +187,10 @@ export function GenerateClient({ caseId }: { caseId: string }) {
               <DoseBloomPlayer className="aspect-[8/5]" />
               <div className="rounded-md border border-warn/30 bg-warn-soft p-4" role="note">
                 <p className="text-[13px] font-medium leading-snug text-status-warn">
-                  What you are generating is a research candidate dose forecast.
+                  {t("generate.forecastTitle")}
                 </p>
                 <p className="mt-1.5 text-xs leading-relaxed text-status-warn/85">
-                  It estimates achievable dose for review and discussion. It is not a treatment
-                  plan and must be recalculated in an approved local TPS with patient-specific QA.
+                  {t("generate.forecastBody")}
                 </p>
               </div>
             </aside>

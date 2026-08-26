@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useViewer } from "@/context/ViewerContext";
+import { useI18n } from "@/i18n/I18nProvider";
 import { STRUCTURE_COLORS, getStructureColor } from "./structureColors";
 import { VIEW, getSliceGeometry } from "@/lib/phantom/anatomy";
 import { PLANE_TOTAL_SLICES } from "@/context/ViewerContext";
@@ -40,6 +41,7 @@ export function SliceViewport({
     isolinesOn,
     stepSlice,
   } = useViewer();
+  const { t } = useI18n();
   const reduce = useReducedMotion();
 
   const geo = useMemo(
@@ -178,8 +180,8 @@ export function SliceViewport({
       {/* HUD overlays — fixed light values: the imaging canvas is dark in both themes */}
       <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-2.5 font-mono text-[10px] tracking-wider text-[#c9d1de]/75">
         <div className="flex items-start justify-between">
-          <span>{modality.toUpperCase()} · {plane.slice(0, 3).toUpperCase()}{raw && " · RAW"}</span>
-          <span>FOV 260mm</span>
+          <span>{modality.toUpperCase()} · {t(`contours.${plane}` as never)}{raw && ` · ${t("viewer.rawTag")}`}</span>
+          <span>{t("viewer.fov")}</span>
         </div>
         <div className="flex items-end justify-between">
           <span>
